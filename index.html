@@ -135,7 +135,6 @@
       object-fit: contain;
     }
 
-    /* СПИСОК АКТИВНЫХ ОБЪЕКТОВ */
     .objects-list-wrapper {
       background: rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -170,9 +169,8 @@
       user-select: none;
     }
 
-    .object-item:hover, .object-item.highlighted {
+    .object-item:hover {
       background: rgba(56, 189, 248, 0.2);
-      border: 1px solid rgba(56, 189, 248, 0.4);
     }
 
     .object-item-info {
@@ -210,11 +208,6 @@
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.18);
     }
 
     .btn-danger {
@@ -226,11 +219,6 @@
       font-size: 10px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .btn-danger:hover {
-      background: #dc2626;
     }
 
     .empty-msg {
@@ -253,66 +241,6 @@
       cursor: pointer;
       font-weight: 700;
       font-size: 11px;
-      transition: background 0.2s ease;
-    }
-
-    .screenshot-btn:hover {
-      background: #1d4ed8;
-    }
-
-    .screenshot-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    /* ФИКСИРОВАННЫЙ РАЗМЕР МАРКЕРА ИКОНКИ ДЛЯ ИСКЛЮЧЕНИЯ СМЕЩЕНИЯ */
-    .custom-icon-marker {
-      position: relative;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      cursor: grab;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      transition: transform 0.15s ease;
-    }
-
-    .custom-icon-marker:active {
-      cursor: grabbing;
-    }
-
-    .custom-icon-marker.highlighted {
-      transform: scale(1.3);
-      filter: drop-shadow(0 0 8px #38bdf8);
-      z-index: 1000 !important;
-    }
-
-    .custom-icon-marker img.drone-img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-      pointer-events: none;
-      user-select: none;
-      display: block;
-      transition: transform 0.05s linear;
-    }
-
-    /* КНОПКА УДАЛЕНИЯ НА КАРТЕ */
-    .marker-controls {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      display: none;
-      z-index: 200;
-    }
-
-    .custom-icon-marker:hover .marker-controls {
-      display: flex;
     }
 
     .control-btn.delete {
@@ -328,35 +256,8 @@
       cursor: pointer;
       font-size: 10px;
       font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
 
-    .control-btn.delete:hover {
-      background: #dc2626;
-    }
-
-    /* ПОДСКАЗКА О ПРОКРУТКЕ */
-    .rotation-hint {
-      position: absolute;
-      bottom: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      background: rgba(0,0,0,0.85);
-      color: #38bdf8;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 2px 4px;
-      border-radius: 4px;
-      pointer-events: none;
-      display: none;
-    }
-
-    .custom-icon-marker:hover .rotation-hint {
-      display: block;
-    }
-
-    /* ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ */
     .toast {
       position: absolute;
       bottom: 25px;
@@ -372,7 +273,6 @@
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .toast.show {
@@ -384,7 +284,6 @@
 
 <div id="map"></div>
 
-<!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
 <div class="controls-panel" id="ui-panel">
   <div class="panel-section">
     <div class="panel-title">Добавить объект</div>
@@ -437,9 +336,6 @@
   </div>
 
   <button class="screenshot-btn" onclick="takeScreenshot()">
-    <svg viewBox="0 0 24 24">
-      <path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m8 3a5 5 0 0 0-5 5a5 5 0 0 0 5 5a5 5 0 0 0 5-5a5 5 0 0 0-5-5m0 2a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3Z"/>
-    </svg>
     Сделать скриншот
   </button>
 </div>
@@ -450,9 +346,10 @@
   const SHOSTKA_CENTER = [33.4729, 51.8638];
   const TARGET_ZOOM = 9.3;
 
-  // Массив для хранения данных активных маркеров
-  let activeMarkers = [];
+  let activeFeatures = [];
   let markerCounters = {};
+  let loadedImages = new Set();
+  let draggedFeatureId = null;
 
   const places = [
     { name: "Шостка", coords: [33.4729, 51.8638], size: "large" },
@@ -514,6 +411,7 @@
   });
 
   map.on('load', async () => {
+    // 1. ЗАТЕМНЕНИЕ ЗА ПРЕДЕЛАМИ УКРАИНЫ
     let ukraineGeojson = null;
     let ukraineRings = [];
 
@@ -536,7 +434,6 @@
 
     if (ukraineRings.length > 0) {
       const worldBox = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
-      
       const outsideMaskGeoJSON = {
         "type": "Feature",
         "geometry": {
@@ -546,7 +443,6 @@
       };
 
       map.addSource('outside-mask-src', { type: 'geojson', data: outsideMaskGeoJSON });
-
       map.addLayer({
         'id': 'outside-mask-dimming',
         'type': 'fill',
@@ -558,6 +454,7 @@
       });
     }
 
+    // 2. ИСТОЧНИКИ ДАННЫХ ДЛЯ ВЕКТОРНЫХ СЛОЕВ (ПОСЕЛЕНИЯ, ТРАССЫ, РАЙОНЫ)
     map.addSource('ukraine-src', { type: 'geojson', data: ukraineGeojson || 'ukraine.geojson' });
     map.addSource('towns-src', { type: 'geojson', data: 'towns.geojson' });
     map.addSource('traca-src', { type: 'geojson', data: 'traca.geojson' });
@@ -571,6 +468,7 @@
       ['==', ['get', 'district'], 'Шосткинський район']
     ];
 
+    // Заполнение и контуры населенных пунктов
     map.addLayer({
       'id': 'towns-fill',
       'type': 'fill',
@@ -592,6 +490,7 @@
       }
     });
 
+    // Трассы
     map.addLayer({
       'id': 'traca-layer',
       'type': 'line',
@@ -603,6 +502,7 @@
       }
     });
 
+    // Граница Украины
     map.addLayer({
       'id': 'ukraine-border',
       'type': 'line',
@@ -614,6 +514,7 @@
       }
     });
 
+    // Границы соседних районов
     map.addLayer({
       'id': 'other-districts-border',
       'type': 'line',
@@ -626,6 +527,7 @@
       }
     });
 
+    // Белая выделенная граница Шосткинского района
     map.addLayer({
       'id': 'shostka-border-main',
       'type': 'line',
@@ -638,134 +540,187 @@
       }
     });
 
+    // 3. ИСТОЧНИК И СЛОЙ ДЛЯ БПЛА
+    map.addSource('drones-src', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: []
+      }
+    });
+
+    map.addLayer({
+      id: 'drones-layer',
+      type: 'symbol',
+      source: 'drones-src',
+      layout: {
+        'icon-image': ['get', 'iconImage'],
+        'icon-size': 0.07,
+        'icon-rotate': ['get', 'rotation'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-pitch-alignment': 'map',
+        'icon-rotation-alignment': 'map'
+      }
+    });
+
+    // 4. МЕТКИ НАСЕЛЕННЫХ ПУНКТОВ
     places.forEach(place => {
       const el = document.createElement('div');
       el.className = `place-label ${place.size}`;
       el.innerText = place.name;
-
-      new maplibregl.Marker({
-        element: el,
-        anchor: 'center'
-      })
-      .setLngLat(place.coords)
-      .addTo(map);
+      new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(place.coords).addTo(map);
     });
+
+    // 5. ИНТЕРАКТИВ БПЛА (Перетаскивание, курсор, поворот без зума)
+    map.on('mousedown', 'drones-layer', (e) => {
+      if (!e.features.length) return;
+      draggedFeatureId = e.features[0].properties.id;
+      map.getCanvas().style.cursor = 'grabbing';
+      map.dragPan.disable();
+    });
+
+    map.on('mousemove', (e) => {
+      if (!draggedFeatureId) return;
+      const feat = activeFeatures.find(f => f.properties.id === draggedFeatureId);
+      if (feat) {
+        feat.geometry.coordinates = [e.lngLat.lng, e.lngLat.lat];
+        updateGeoJSON();
+      }
+    });
+
+    map.on('mouseup', () => {
+      if (draggedFeatureId) {
+        draggedFeatureId = null;
+        map.getCanvas().style.cursor = '';
+        map.dragPan.enable();
+      }
+    });
+
+    map.on('mouseenter', 'drones-layer', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'drones-layer', () => {
+      if (!draggedFeatureId) map.getCanvas().style.cursor = '';
+    });
+
+    const mapCanvas = map.getCanvasContainer();
+    mapCanvas.addEventListener('wheel', (e) => {
+      const point = [e.clientX, e.clientY];
+      const bbox = [
+        [point[0] - 15, point[1] - 15],
+        [point[0] + 15, point[1] + 15]
+      ];
+      
+      const features = map.queryRenderedFeatures(bbox, { layers: ['drones-layer'] });
+      
+      if (features.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const id = features[0].properties.id;
+        const feat = activeFeatures.find(f => f.properties.id === id);
+        
+        if (feat) {
+          const delta = Math.sign(e.deltaY);
+          feat.properties.rotation = (feat.properties.rotation || 0) + delta * 5;
+          updateGeoJSON();
+        }
+      }
+    }, { passive: false, capture: true });
   });
 
-  // ДОБАВЛЕНИЕ И УПРАВЛЕНИЕ МАРКЕРАМИ
-  function addIconMarker(fileName, typeName) {
+  async function ensureImageLoaded(fileName) {
+    if (loadedImages.has(fileName)) return;
+    return new Promise((resolve) => {
+      map.loadImage(`icons/${fileName}`, (error, image) => {
+        if (!error && image) {
+          if (!map.hasImage(fileName)) {
+            map.addImage(fileName, image);
+          }
+          loadedImages.add(fileName);
+        }
+        resolve();
+      });
+    });
+  }
+
+  async function addIconMarker(fileName, typeName) {
+    await ensureImageLoaded(fileName);
+
     const center = map.getCenter();
-    
+    const randomOffsetLng = (Math.random() - 0.5) * 0.01;
+    const randomOffsetLat = (Math.random() - 0.5) * 0.01;
+
     markerCounters[typeName] = (markerCounters[typeName] || 0) + 1;
     const title = `${typeName} ${markerCounters[typeName]}`;
     const id = 'marker_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'custom-icon-marker';
-    wrapper.id = `el_${id}`;
-    
-    let currentRotation = 0;
-
-    const img = document.createElement('img');
-    img.className = 'drone-img';
-    img.src = `icons/${fileName}`;
-
-    const controls = document.createElement('div');
-    controls.className = 'marker-controls';
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'control-btn delete';
-    deleteBtn.innerHTML = '✕';
-    deleteBtn.title = 'Удалить';
-    deleteBtn.onclick = (e) => {
-      e.stopPropagation();
-      removeSingleMarker(id);
+    const newFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [center.lng + randomOffsetLng, center.lat + randomOffsetLat]
+      },
+      properties: {
+        id: id,
+        title: title,
+        fileName: fileName,
+        iconImage: fileName,
+        rotation: 0,
+        checked: false
+      }
     };
 
-    const hint = document.createElement('div');
-    hint.className = 'rotation-hint';
-    hint.innerText = 'Колесо: поворот';
-
-    controls.appendChild(deleteBtn);
-    wrapper.appendChild(controls);
-    wrapper.appendChild(img);
-    wrapper.appendChild(hint);
-
-    // Точный поворот колесиком мыши (с шагом 5 градусов)
-    wrapper.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const delta = Math.sign(e.deltaY);
-      currentRotation += delta * 5;
-      img.style.transform = `rotate(${currentRotation}deg)`;
-    }, { passive: false });
-
-    // Жестко фиксируем якорь по центру
-    const marker = new maplibregl.Marker({
-      element: wrapper,
-      draggable: true,
-      anchor: 'center'
-    })
-    .setLngLat([center.lng, center.lat])
-    .addTo(map);
-
-    const itemData = {
-      id: id,
-      title: title,
-      fileName: fileName,
-      marker: marker,
-      wrapper: wrapper,
-      checked: false
-    };
-
-    activeMarkers.push(itemData);
+    activeFeatures.push(newFeature);
+    updateGeoJSON();
     updateUIList();
   }
 
-  function removeSingleMarker(id) {
-    const index = activeMarkers.findIndex(m => m.id === id);
-    if (index !== -1) {
-      activeMarkers[index].marker.remove();
-      activeMarkers.splice(index, 1);
-      updateUIList();
+  function updateGeoJSON() {
+    const source = map.getSource('drones-src');
+    if (source) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: activeFeatures
+      });
     }
+  }
+
+  function removeSingleMarker(id) {
+    activeFeatures = activeFeatures.filter(f => f.properties.id !== id);
+    updateGeoJSON();
+    updateUIList();
   }
 
   function updateUIList() {
     const listContainer = document.getElementById('objects-list');
     const countContainer = document.getElementById('objects-count');
     
-    countContainer.innerText = activeMarkers.length;
+    countContainer.innerText = activeFeatures.length;
     listContainer.innerHTML = '';
 
-    if (activeMarkers.length === 0) {
+    if (activeFeatures.length === 0) {
       listContainer.innerHTML = '<div class="empty-msg">Нет активных объектов на карте</div>';
       return;
     }
 
-    activeMarkers.forEach(item => {
+    activeFeatures.forEach(item => {
       const el = document.createElement('div');
       el.className = 'object-item';
-      
-      el.onmouseenter = () => {
-        item.wrapper.classList.add('highlighted');
-        el.classList.add('highlighted');
-        map.easeTo({ center: item.marker.getLngLat(), duration: 300 });
-      };
 
-      el.onmouseleave = () => {
-        item.wrapper.classList.remove('highlighted');
-        el.classList.remove('highlighted');
+      el.onclick = (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.classList.contains('delete')) return;
+        map.flyTo({ center: item.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), speed: 1.2 });
       };
 
       el.innerHTML = `
         <div class="object-item-info">
-          <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleCheck('${item.id}')">
-          <img src="icons/${item.fileName}" alt="icon">
-          <span class="object-item-name">${item.title}</span>
+          <input type="checkbox" ${item.properties.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleCheck('${item.properties.id}')">
+          <img src="icons/${item.properties.fileName}" alt="icon">
+          <span class="object-item-name">${item.properties.title}</span>
         </div>
-        <div class="control-btn delete" style="width:16px; height:16px; font-size:9px;" onclick="event.stopPropagation(); removeSingleMarker('${item.id}')">✕</div>
+        <div class="control-btn delete" onclick="event.stopPropagation(); removeSingleMarker('${item.properties.id}')">✕</div>
       `;
 
       listContainer.appendChild(el);
@@ -773,133 +728,45 @@
   }
 
   function toggleCheck(id) {
-    const item = activeMarkers.find(m => m.id === id);
+    const item = activeFeatures.find(f => f.properties.id === id);
     if (item) {
-      item.checked = !item.checked;
+      item.properties.checked = !item.properties.checked;
     }
   }
 
   function selectAllObjects(status) {
-    activeMarkers.forEach(m => m.checked = status);
+    activeFeatures.forEach(f => f.properties.checked = status);
     updateUIList();
   }
 
   function deleteSelectedObjects() {
-    const toDelete = activeMarkers.filter(m => m.checked);
-    toDelete.forEach(item => {
-      item.marker.remove();
-    });
-    activeMarkers = activeMarkers.filter(m => !m.checked);
+    activeFeatures = activeFeatures.filter(f => !f.properties.checked);
+    updateGeoJSON();
     updateUIList();
   }
 
-  // СКРИНШОТ РАЙОНА 1:1 В БУФЕР ОБМЕНА
   async function takeScreenshot() {
     const uiPanel = document.getElementById('ui-panel');
-    const controlsList = document.querySelectorAll('.marker-controls, .rotation-hint');
-
-    // Скрываем весь UI
     uiPanel.style.display = 'none';
-    controlsList.forEach(c => c.style.setProperty('display', 'none', 'important'));
 
-    // Сохраняем текущий вид пользователя
-    const currentCenter = map.getCenter();
-    const currentZoom = map.getZoom();
-    const currentBearing = map.getBearing();
-    const currentPitch = map.getPitch();
-
-    // Принудительно ставим стандартный вид на весь Шосткинский район 1:1
-    map.jumpTo({
-      center: SHOSTKA_CENTER,
-      zoom: TARGET_ZOOM,
-      bearing: 0,
-      pitch: 0
-    });
-
-    // Ожидаем завершения рендера карты
-    await new Promise(resolve => setTimeout(resolve, 150));
+    map.jumpTo({ center: SHOSTKA_CENTER, zoom: TARGET_ZOOM, bearing: 0, pitch: 0 });
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     try {
       const mapCanvas = map.getCanvas();
-      
-      const screenshotCanvas = document.createElement('canvas');
-      screenshotCanvas.width = mapCanvas.width;
-      screenshotCanvas.height = mapCanvas.height;
-      const ctx = screenshotCanvas.getContext('2d');
-
-      // 1. Отрисовываем основу карты
-      ctx.drawImage(mapCanvas, 0, 0);
-
-      // 2. Сведение маркеров и подписей
-      const mapBounds = mapCanvas.getBoundingClientRect();
-      const markers = document.querySelectorAll('.custom-icon-marker, .place-label');
-
-      markers.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        const x = (rect.left - mapBounds.left) * (mapCanvas.width / mapBounds.width);
-        const y = (rect.top - mapBounds.top) * (mapCanvas.height / mapBounds.height);
-        const width = rect.width * (mapCanvas.width / mapBounds.width);
-        const height = rect.height * (mapCanvas.height / mapBounds.height);
-
-        const imgEl = el.querySelector('img.drone-img');
-        if (imgEl) {
-          ctx.save();
-          // Достаем угол поворота из transform
-          const styleTransform = imgEl.style.transform;
-          const match = styleTransform.match(/rotate\((-?\d+)deg\)/);
-          const angle = match ? parseInt(match[1]) : 0;
-
-          ctx.translate(x + width / 2, y + height / 2);
-          ctx.rotate((angle * Math.PI) / 180);
-          ctx.drawImage(imgEl, -width / 2, -height / 2, width, height);
-          ctx.restore();
-        } else if (el.classList.contains('place-label')) {
-          const style = window.getComputedStyle(el);
-          ctx.font = `${style.fontWeight} ${parseFloat(style.fontSize) * (mapCanvas.height / mapBounds.height)}px 'Plus Jakarta Sans', sans-serif`;
-          ctx.fillStyle = style.color;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
-          ctx.shadowBlur = 4;
-          ctx.fillText(el.innerText, x + width / 2, y + height / 2);
-        }
-      });
-
-      // Сохраняем результат в буфер
-      screenshotCanvas.toBlob(async (blob) => {
+      mapCanvas.toBlob(async (blob) => {
         if (blob) {
-          try {
-            await navigator.clipboard.write([
-              new ClipboardItem({ 'image/png': blob })
-            ]);
-            showToast();
-          } catch (err) {
-            console.error('Ошибка записи в буфер:', err);
-            alert('Для работы скриншотов открывайте файл через локальный сервер (Live Server).');
-          }
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          const toast = document.getElementById('toast');
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2500);
         }
       }, 'image/png');
-
     } catch (e) {
       console.error(e);
     } finally {
-      // Возвращаем UI и позицию пользователя назад
       uiPanel.style.display = 'flex';
-      controlsList.forEach(c => c.style.removeProperty('display'));
-      
-      map.jumpTo({
-        center: currentCenter,
-        zoom: currentZoom,
-        bearing: currentBearing,
-        pitch: currentPitch
-      });
     }
-  }
-
-  function showToast() {
-    const toast = document.getElementById('toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
   }
 </script>
 
