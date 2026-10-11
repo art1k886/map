@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Шосткинский район</title>
+  <title>Шосткинский район и регионы</title>
   
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
   <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
@@ -32,7 +32,6 @@
       width: 100%;
     }
 
-    /* ПОДПИСИ НАСЕЛЕННЫХ ПУНКТОВ */
     .place-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
       text-align: center;
@@ -70,7 +69,6 @@
       z-index: 10;
     }
 
-    /* ПАНЕЛЬ УПРАВЛЕНИЯ */
     .controls-panel {
       position: absolute;
       top: 15px;
@@ -167,11 +165,6 @@
       cursor: pointer;
       transition: background 0.15s ease;
       user-select: none;
-    }
-
-    .object-item.active-item {
-      border: 1px solid #38bdf8;
-      background: rgba(56, 189, 248, 0.1);
     }
 
     .object-item:hover {
@@ -355,9 +348,10 @@
   let markerCounters = {};
   let loadedImages = new Set();
   let draggedFeatureId = null;
-  let selectedFeatureId = null;
+  let hoveredDroneId = null;
 
   const places = [
+    // Основные города Шосткинского района
     { name: "Шостка", coords: [33.4729, 51.8638], size: "large" },
     { name: "Новгород-Сіверський", coords: [33.2796, 52.0040], size: "large" },
     { name: "Глухів", coords: [33.9148, 51.6787], size: "large" },
@@ -385,7 +379,69 @@
     { name: "Береза", coords: [33.859720, 51.734766], size: "small" },
     { name: "Івот", coords: [33.486329, 51.983202], size: "small" },
     { name: "Каліївка", coords: [33.533156, 52.059774], size: "small" },
-    { name: "Шатрище", coords: [33.684786, 52.026218], size: "small" }
+    { name: "Шатрище", coords: [33.684786, 52.026218], size: "small" },
+
+    // Другие крупные города Сумской области
+    { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
+    { name: "Чернігів", coords: [31.28655978, 51.50541414], size: "large" },
+    { name: "Конотоп", coords: [33.20040213, 51.23250772], size: "large" },
+    { name: "Охтирка", coords: [34.89467602, 50.30852254], size: "large" },
+    { name: "Ромни", coords: [33.49520264, 50.74025149], size: "large" },
+    { name: "Ніжин", coords: [31.88843512, 51.04772279], size: "large" },
+    { name: "Прилуки", coords: [32.3923, 50.5843], size: "large" },
+    { name: "Корюківка", coords: [32.2709, 51.7766], size: "medium" },
+    { name: "Городня", coords: [31.5973, 51.8841], size: "medium" },
+    { name: "Сновськ", coords: [31.9575, 51.8499], size: "medium" },
+    { name: "Борзна", coords: [32.4411, 51.2527], size: "medium" },
+    { name: "Мена", coords: [32.216667, 51.516667], size: "medium" },
+    { name: "Короп", coords: [32.95575, 51.56265], size: "medium" },
+    { name: "Буринь", coords: [33.83337859, 51.19935882], size: "medium" },
+    { name: "Білопілля", coords: [34.31078602, 51.14747465], size: "medium" },
+    { name: "Лебедин", coords: [34.48258115, 50.58227558], size: "medium" },
+
+    // Сумская область — вне Шосткинского района
+    { name: "Путивль", coords: [33.86884747, 51.33529242], size: "large" },
+    { name: "Тростянець", coords: [34.965668, 50.484778], size: "large" },
+    { name: "Краснопілля", coords: [35.256328, 50.773886], size: "medium" },
+    { name: "Велика Писарівка", coords: [35.482992, 50.423354], size: "medium" },
+    { name: "Ворожба", coords: [34.226649, 51.173162], size: "medium" },
+    { name: "Терни", coords: [33.970697, 50.989163], size: "medium" },
+    { name: "Миколаївка", coords: [34.373727, 50.941405], size: "medium" },
+    { name: "Річки", coords: [34.49398832, 51.12226017], size: "small" },
+    { name: "Старе Село", coords: [34.809338, 50.825996], size: "small" },
+    { name: "Грун", coords: [34.0, 50.5], size: "small" },
+    { name: "Попівка", coords: [33.11425821, 51.234291], size: "small" },
+    { name: "Чернеччина", coords: [34.80883998, 50.3041151], size: "small" },
+    { name: "Андріяшівка", coords: [33.518469, 50.515146], size: "small" },
+    { name: "Безжівка", coords: [33.763451, 51.002981], size: "small" },
+    { name: "Розсоші", coords: [35.443583, 50.335007], size: "small" },
+
+    // Черниговская область — вне Шосткинского района
+    { name: "Бахмач", coords: [32.783333, 51.183333], size: "large" },
+    { name: "Бобровиця", coords: [31.382047, 50.745594], size: "medium" },
+    { name: "Ічня", coords: [32.394, 50.862], size: "medium" },
+    { name: "Носівка", coords: [31.581, 50.931], size: "medium" },
+    { name: "Остер", coords: [30.883, 50.95], size: "medium" },
+    { name: "Козелець", coords: [31.116667, 50.9], size: "medium" },
+    { name: "Куликівка", coords: [31.643611, 51.374722], size: "small" },
+    { name: "Сосниця", coords: [32.499722, 51.531111], size: "medium" },
+    { name: "Варва", coords: [32.723611, 50.495], size: "medium" },
+    { name: "Талалаївка", coords: [33.140833, 50.837222], size: "small" },
+    { name: "Срібне", coords: [32.921667, 50.663056], size: "small" },
+    { name: "Ріпки", coords: [31.083333, 51.8], size: "medium" },
+    { name: "Десна", coords: [30.766667, 50.927778], size: "small" },
+    { name: "Лосинівка", coords: [31.933333, 50.833333], size: "small" },
+    { name: "Ладан", coords: [32.583333, 50.516667], size: "small" },
+    { name: "Мала Дівиця", coords: [32.25, 50.55], size: "small" },
+    { name: "Понорниця", coords: [32.716667, 51.666667], size: "small" },
+    { name: "Добрянка", coords: [31.183333, 52.066667], size: "small" },
+    { name: "Любеч", coords: [30.65, 51.7], size: "small" },
+    { name: "Замглай", coords: [31.15, 51.833333], size: "small" },
+    { name: "Седнів", coords: [31.566667, 51.65], size: "small" },
+    { name: "Олишівка", coords: [31.333333, 51.216667], size: "small" },
+    { name: "Михайло-Коцюбинське", coords: [31.083333, 51.466667], size: "small" },
+    { name: "Дмитрівка", coords: [32.95, 51.083333], size: "small" },
+    { name: "Парафіївка", coords: [32.65, 50.8], size: "small" }
   ];
 
   const map = new maplibregl.Map({
@@ -417,7 +473,6 @@
   });
 
   map.on('load', async () => {
-    // 1. ЗАТЕМНЕНИЕ ЗА ПРЕДЕЛАМИ УКРАИНЫ
     let ukraineGeojson = null;
     let ukraineRings = [];
 
@@ -460,30 +515,12 @@
       });
     }
 
-    // 2. ИСТОЧНИКИ ДАННЫХ ДЛЯ ВЕКТОРНЫХ СЛОЕВ
     map.addSource('ukraine-src', { type: 'geojson', data: ukraineGeojson || 'ukraine.geojson' });
     map.addSource('towns-src', { type: 'geojson', data: 'towns.geojson' });
     map.addSource('traca-src', { type: 'geojson', data: 'traca.geojson' });
     map.addSource('rayony-src', { type: 'geojson', data: 'rayony_ukrainy.geojson' });
+    map.addSource('regions-src', { type: 'geojson', data: 'regions.geojson' });
 
-    const shostkaFilter = [
-      'any',
-      ['==', ['get', 'name'], 'Шосткинський район'],
-      ['==', ['get', 'name_uk'], 'Шосткинський район'],
-      ['==', ['get', 'ADM2_UA'], 'Шосткинський район'],
-      ['==', ['get', 'district'], 'Шосткинський район']
-    ];
-
-    // Фильтр для Сумской и Черниговской областей
-    const sumyChernihivFilter = [
-      'any',
-      ['==', ['get', 'ADM1_UA'], 'Сумська область'],
-      ['==', ['get', 'ADM1_UA'], 'Чернігівська область'],
-      ['==', ['get', 'region'], 'Сумська область'],
-      ['==', ['get', 'region'], 'Чернігівська область']
-    ];
-
-    // Заполнение и контуры населенных пунктов
     map.addLayer({
       'id': 'towns-fill',
       'type': 'fill',
@@ -505,27 +542,6 @@
       }
     });
 
-    // Автоматические подписи для всех населенных пунктов из towns.geojson
-    map.addLayer({
-      'id': 'towns-labels',
-      'type': 'symbol',
-      'source': 'towns-src',
-      'minzoom': 9.5,
-      'layout': {
-        'text-field': ['coalesce', ['get', 'name_ua'], ['get', 'name'], ['get', 'local_name'], ''],
-        'text-size': 11,
-        'text-anchor': 'center',
-        'text-allow-overlap': false
-      },
-      'paint': {
-        'text-color': '#cbd5e1',
-        'text-halo-color': '#0b172a',
-        'text-halo-width': 1.5,
-        'text-opacity': 0.9
-      }
-    });
-
-    // Трассы
     map.addLayer({
       'id': 'traca-layer',
       'type': 'line',
@@ -537,7 +553,6 @@
       }
     });
 
-    // Граница Украины
     map.addLayer({
       'id': 'ukraine-border',
       'type': 'line',
@@ -549,54 +564,30 @@
       }
     });
 
-    // Границы остальных районов Сумской и Черниговской областей (светятся ярче остальных)
+    // Слой регионов (regions.geojson) — толщина 1.6px
     map.addLayer({
-      'id': 'sumy-chernihiv-districts-border',
+      'id': 'regions-border',
       'type': 'line',
-      'source': 'rayony-src',
-      'filter': [
-        'all',
-        sumyChernihivFilter,
-        ['!', shostkaFilter]
-      ],
-      'paint': {
-        'line-color': '#94a3b8',
-        'line-width': 1.4,
-        'line-opacity': 0.65
-      }
-    });
-
-    // Границы прочих районов Украины
-    map.addLayer({
-      'id': 'other-districts-border',
-      'type': 'line',
-      'source': 'rayony-src',
-      'filter': [
-        'all',
-        ['!', sumyChernihivFilter],
-        ['!', shostkaFilter]
-      ],
-      'paint': {
-        'line-color': '#64748b',
-        'line-width': 1.2,
-        'line-opacity': 0.3
-      }
-    });
-
-    // Белая выделенная граница Шосткинского района
-    map.addLayer({
-      'id': 'shostka-border-main',
-      'type': 'line',
-      'source': 'rayony-src',
-      'filter': shostkaFilter,
+      'source': 'regions-src',
       'paint': {
         'line-color': '#ffffff',
-        'line-width': 2.2,
-        'line-opacity': 1.0
+        'line-width': 1.6,
+        'line-opacity': 0.85
       }
     });
 
-    // 3. ИСТОЧНИК И СЛОЙ ДЛЯ БПЛА
+    // Слой районов (rayony_ukrainy.geojson) — толщина 0.6px
+    map.addLayer({
+      'id': 'all-districts-border',
+      'type': 'line',
+      'source': 'rayony-src',
+      'paint': {
+        'line-color': '#ffffff',
+        'line-width': 0.6,
+        'line-opacity': 0.75
+      }
+    });
+
     map.addSource('drones-src', {
       type: 'geojson',
       data: {
@@ -620,7 +611,6 @@
       }
     });
 
-    // 4. МЕТКИ КРУПНЫХ НАСЕЛЕННЫХ ПУНКТОВ
     places.forEach(place => {
       const el = document.createElement('div');
       el.className = `place-label ${place.size}`;
@@ -628,29 +618,20 @@
       new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(place.coords).addTo(map);
     });
 
-    // 5. ИНТЕРАКТИВ БПЛА (Перетаскивание, выбор, вращение)
-    map.on('click', 'drones-layer', (e) => {
-      if (e.features.length > 0) {
-        selectedFeatureId = e.features[0].properties.id;
-        updateUIList();
-      }
-    });
-
     map.on('mousedown', 'drones-layer', (e) => {
       if (!e.features.length) return;
       draggedFeatureId = e.features[0].properties.id;
-      selectedFeatureId = draggedFeatureId;
-      updateUIList();
       map.getCanvas().style.cursor = 'grabbing';
       map.dragPan.disable();
     });
 
     map.on('mousemove', (e) => {
-      if (!draggedFeatureId) return;
-      const feat = activeFeatures.find(f => f.properties.id === draggedFeatureId);
-      if (feat) {
-        feat.geometry.coordinates = [e.lngLat.lng, e.lngLat.lat];
-        updateGeoJSON();
+      if (draggedFeatureId) {
+        const feat = activeFeatures.find(f => f.properties.id === draggedFeatureId);
+        if (feat) {
+          feat.geometry.coordinates = [e.lngLat.lng, e.lngLat.lat];
+          updateGeoJSON();
+        }
       }
     });
 
@@ -662,14 +643,31 @@
       }
     });
 
-    map.on('mouseenter', 'drones-layer', () => {
+    map.on('mouseenter', 'drones-layer', (e) => {
       map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'drones-layer', () => {
-      if (!draggedFeatureId) map.getCanvas().style.cursor = '';
+      if (e.features.length > 0) {
+        hoveredDroneId = e.features[0].properties.id;
+      }
     });
 
-    // Вращение колесиком мыши
+    map.on('mouseleave', 'drones-layer', () => {
+      if (!draggedFeatureId) map.getCanvas().style.cursor = '';
+      hoveredDroneId = null;
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (!hoveredDroneId) return;
+      const key = e.key.toLowerCase();
+      if (key === 'a' || key === 'd') {
+        const feat = activeFeatures.find(f => f.properties.id === hoveredDroneId);
+        if (feat) {
+          const delta = (key === 'a') ? -5 : 5;
+          feat.properties.rotation = (feat.properties.rotation || 0) + delta;
+          updateGeoJSON();
+        }
+      }
+    });
+
     const mapCanvas = map.getCanvasContainer();
     mapCanvas.addEventListener('wheel', (e) => {
       const point = [e.clientX, e.clientY];
@@ -685,10 +683,8 @@
         e.stopPropagation();
 
         const id = features[0].properties.id;
-        selectedFeatureId = id;
-        updateUIList();
-
         const feat = activeFeatures.find(f => f.properties.id === id);
+        
         if (feat) {
           const delta = Math.sign(e.deltaY);
           feat.properties.rotation = (feat.properties.rotation || 0) + delta * 5;
@@ -696,23 +692,6 @@
         }
       }
     }, { passive: false, capture: true });
-
-    // Вращение клавишами A / D (и русскими Ф / В)
-    window.addEventListener('keydown', (e) => {
-      if (!selectedFeatureId) return;
-      const feat = activeFeatures.find(f => f.properties.id === selectedFeatureId);
-      if (!feat) return;
-
-      if (e.key === 'a' || e.key === 'A' || e.key === 'ф' || e.key === 'Ф') {
-        e.preventDefault();
-        feat.properties.rotation = (feat.properties.rotation || 0) - 5;
-        updateGeoJSON();
-      } else if (e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
-        e.preventDefault();
-        feat.properties.rotation = (feat.properties.rotation || 0) + 5;
-        updateGeoJSON();
-      }
-    });
   });
 
   async function ensureImageLoaded(fileName) {
@@ -758,7 +737,6 @@
     };
 
     activeFeatures.push(newFeature);
-    selectedFeatureId = id;
     updateGeoJSON();
     updateUIList();
   }
@@ -774,7 +752,6 @@
   }
 
   function removeSingleMarker(id) {
-    if (selectedFeatureId === id) selectedFeatureId = null;
     activeFeatures = activeFeatures.filter(f => f.properties.id !== id);
     updateGeoJSON();
     updateUIList();
@@ -794,13 +771,10 @@
 
     activeFeatures.forEach(item => {
       const el = document.createElement('div');
-      const isSelected = item.properties.id === selectedFeatureId;
-      el.className = `object-item ${isSelected ? 'active-item' : ''}`;
+      el.className = 'object-item';
 
       el.onclick = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.classList.contains('delete')) return;
-        selectedFeatureId = item.properties.id;
-        updateUIList();
         map.flyTo({ center: item.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), speed: 1.2 });
       };
 
