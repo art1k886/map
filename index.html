@@ -169,6 +169,11 @@
       user-select: none;
     }
 
+    .object-item.active-item {
+      border: 1px solid #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+
     .object-item:hover {
       background: rgba(56, 189, 248, 0.2);
     }
@@ -350,6 +355,7 @@
   let markerCounters = {};
   let loadedImages = new Set();
   let draggedFeatureId = null;
+  let selectedFeatureId = null;
 
   const places = [
     { name: "Шостка", coords: [33.4729, 51.8638], size: "large" },
@@ -454,7 +460,7 @@
       });
     }
 
-    // 2. ИСТОЧНИКИ ДАННЫХ ДЛЯ ВЕКТОРНЫХ СЛОЕВ (ПОСЕЛЕНИЯ, ТРАССЫ, РАЙОНЫ)
+    // 2. ИСТОЧНИКИ ДАННЫХ ДЛЯ ВЕКТОРНЫХ СЛОЕВ
     map.addSource('ukraine-src', { type: 'geojson', data: ukraineGeojson || 'ukraine.geojson' });
     map.addSource('towns-src', { type: 'geojson', data: 'towns.geojson' });
     map.addSource('traca-src', { type: 'geojson', data: 'traca.geojson' });
@@ -466,6 +472,15 @@
       ['==', ['get', 'name_uk'], 'Шосткинський район'],
       ['==', ['get', 'ADM2_UA'], 'Шосткинський район'],
       ['==', ['get', 'district'], 'Шосткинський район']
+    ];
+
+    // Фильтр для Сумской и Черниговской областей
+    const sumyChernihivFilter = [
+      'any',
+      ['==', ['get', 'ADM1_UA'], 'Сумська область'],
+      ['==', ['get', 'ADM1_UA'], 'Чернігівська область'],
+      ['==', ['get', 'region'], 'Сумська область'],
+      ['==', ['get', 'region'], 'Чернігівська область']
     ];
 
     // Заполнение и контуры населенных пунктов
@@ -487,6 +502,26 @@
         'line-color': '#868786',
         'line-width': 1.8,
         'line-opacity': 0.95
+      }
+    });
+
+    // Автоматические подписи для всех населенных пунктов из towns.geojson
+    map.addLayer({
+      'id': 'towns-labels',
+      'type': 'symbol',
+      'source': 'towns-src',
+      'minzoom': 9.5,
+      'layout': {
+        'text-field': ['coalesce', ['get', 'name_ua'], ['get', 'name'], ['get', 'local_name'], ''],
+        'text-size': 11,
+        'text-anchor': 'center',
+        'text-allow-overlap': false
+      },
+      'paint': {
+        'text-color': '#cbd5e1',
+        'text-halo-color': '#0b172a',
+        'text-halo-width': 1.5,
+        'text-opacity': 0.9
       }
     });
 
@@ -514,16 +549,37 @@
       }
     });
 
-    // Границы соседних районов
+    // Границы остальных районов Сумской и Черниговской областей (светятся ярче остальных)
+    map.addLayer({
+      'id': 'sumy-chernihiv-districts-border',
+      'type': 'line',
+      'source': 'rayony-src',
+      'filter': [
+        'all',
+        sumyChernihivFilter,
+        ['!', shostkaFilter]
+      ],
+      'paint': {
+        'line-color': '#94a3b8',
+        'line-width': 1.4,
+        'line-opacity': 0.65
+      }
+    });
+
+    // Границы прочих районов Украины
     map.addLayer({
       'id': 'other-districts-border',
       'type': 'line',
       'source': 'rayony-src',
-      'filter': ['!', shostkaFilter],
+      'filter': [
+        'all',
+        ['!', sumyChernihivFilter],
+        ['!', shostkaFilter]
+      ],
       'paint': {
         'line-color': '#64748b',
         'line-width': 1.2,
-        'line-opacity': 0.4
+        'line-opacity': 0.3
       }
     });
 
@@ -564,7 +620,7 @@
       }
     });
 
-    // 4. МЕТКИ НАСЕЛЕННЫХ ПУНКТОВ
+    // 4. МЕТКИ КРУПНЫХ НАСЕЛЕННЫХ ПУНКТОВ
     places.forEach(place => {
       const el = document.createElement('div');
       el.className = `place-label ${place.size}`;
@@ -572,10 +628,19 @@
       new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(place.coords).addTo(map);
     });
 
-    // 5. ИНТЕРАКТИВ БПЛА (Перетаскивание, курсор, поворот без зума)
+    // 5. ИНТЕРАКТИВ БПЛА (Перетаскивание, выбор, вращение)
+    map.on('click', 'drones-layer', (e) => {
+      if (e.features.length > 0) {
+        selectedFeatureId = e.features[0].properties.id;
+        updateUIList();
+      }
+    });
+
     map.on('mousedown', 'drones-layer', (e) => {
       if (!e.features.length) return;
       draggedFeatureId = e.features[0].properties.id;
+      selectedFeatureId = draggedFeatureId;
+      updateUIList();
       map.getCanvas().style.cursor = 'grabbing';
       map.dragPan.disable();
     });
@@ -604,6 +669,7 @@
       if (!draggedFeatureId) map.getCanvas().style.cursor = '';
     });
 
+    // Вращение колесиком мыши
     const mapCanvas = map.getCanvasContainer();
     mapCanvas.addEventListener('wheel', (e) => {
       const point = [e.clientX, e.clientY];
@@ -619,8 +685,10 @@
         e.stopPropagation();
 
         const id = features[0].properties.id;
+        selectedFeatureId = id;
+        updateUIList();
+
         const feat = activeFeatures.find(f => f.properties.id === id);
-        
         if (feat) {
           const delta = Math.sign(e.deltaY);
           feat.properties.rotation = (feat.properties.rotation || 0) + delta * 5;
@@ -628,6 +696,23 @@
         }
       }
     }, { passive: false, capture: true });
+
+    // Вращение клавишами A / D (и русскими Ф / В)
+    window.addEventListener('keydown', (e) => {
+      if (!selectedFeatureId) return;
+      const feat = activeFeatures.find(f => f.properties.id === selectedFeatureId);
+      if (!feat) return;
+
+      if (e.key === 'a' || e.key === 'A' || e.key === 'ф' || e.key === 'Ф') {
+        e.preventDefault();
+        feat.properties.rotation = (feat.properties.rotation || 0) - 5;
+        updateGeoJSON();
+      } else if (e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
+        e.preventDefault();
+        feat.properties.rotation = (feat.properties.rotation || 0) + 5;
+        updateGeoJSON();
+      }
+    });
   });
 
   async function ensureImageLoaded(fileName) {
@@ -673,6 +758,7 @@
     };
 
     activeFeatures.push(newFeature);
+    selectedFeatureId = id;
     updateGeoJSON();
     updateUIList();
   }
@@ -688,6 +774,7 @@
   }
 
   function removeSingleMarker(id) {
+    if (selectedFeatureId === id) selectedFeatureId = null;
     activeFeatures = activeFeatures.filter(f => f.properties.id !== id);
     updateGeoJSON();
     updateUIList();
@@ -707,10 +794,13 @@
 
     activeFeatures.forEach(item => {
       const el = document.createElement('div');
-      el.className = 'object-item';
+      const isSelected = item.properties.id === selectedFeatureId;
+      el.className = `object-item ${isSelected ? 'active-item' : ''}`;
 
       el.onclick = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.classList.contains('delete')) return;
+        selectedFeatureId = item.properties.id;
+        updateUIList();
         map.flyTo({ center: item.geometry.coordinates, zoom: Math.max(map.getZoom(), 10), speed: 1.2 });
       };
 
