@@ -20,7 +20,7 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: #0b172a;
+      background-color: #121212;
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow: hidden;
     }
@@ -43,59 +43,68 @@
     }
 
     .place-label.large {
-      color: #ffffff;
+      color: #bbbbbb;
       font-size: 13px;
       font-weight: 800;
       letter-spacing: 0.4px;
-      filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.85)) drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.6));
+      filter: drop-shadow(0px 1px 3px rgba(26, 26, 26, 0.95)) drop-shadow(0px 0px 6px rgba(26, 26, 26, 0.9));
       z-index: 100;
     }
 
     .place-label.medium {
-      color: #f1f5f9;
+      color: #bbbbbb;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.2px;
-      filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.85));
+      filter: drop-shadow(0px 1px 3px rgba(26, 26, 26, 0.95));
       z-index: 50;
     }
 
     .place-label.small {
-      color: #e2e8f0;
+      color: #bbbbbb;
       font-size: 10px;
       font-weight: 600;
       opacity: 0.9;
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.9));
+      filter: drop-shadow(0px 1px 2px rgba(26, 26, 26, 0.95));
       z-index: 10;
     }
 
     .controls-panel {
       position: absolute;
-      top: 15px;
-      left: 15px;
+      top: 10px;
+      left: 10px;
       z-index: 1000;
-      background: rgba(11, 23, 42, 0.92);
+      background: rgba(18, 18, 18, 0.92);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 310px;
-      max-height: calc(100vh - 30px);
+      gap: 8px;
+      width: 280px;
+      max-height: calc(100vh - 20px);
+      overflow-y: auto;
       box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+
+    .controls-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    .controls-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
 
     .panel-section {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .panel-title {
       color: #38bdf8;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -104,21 +113,21 @@
     .icons-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
+      gap: 4px;
     }
 
     .icon-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      padding: 6px 8px;
+      border-radius: 6px;
+      padding: 5px 6px;
       color: #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
     }
 
@@ -128,29 +137,29 @@
     }
 
     .icon-btn img {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       object-fit: contain;
     }
 
     .objects-list-wrapper {
       background: rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 6px;
-      max-height: 220px;
+      border-radius: 6px;
+      padding: 4px;
+      max-height: 150px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .objects-list-wrapper::-webkit-scrollbar {
-      width: 4px;
+      width: 3px;
     }
     .objects-list-wrapper::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     .object-item {
@@ -158,9 +167,9 @@
       align-items: center;
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.04);
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 11px;
+      padding: 5px 6px;
+      border-radius: 5px;
+      font-size: 10px;
       color: #f1f5f9;
       cursor: pointer;
       transition: background 0.15s ease;
@@ -174,13 +183,13 @@
     .object-item-info {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       overflow: hidden;
     }
 
     .object-item-info img {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       object-fit: contain;
     }
 
@@ -192,7 +201,7 @@
 
     .batch-actions {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       align-items: center;
       justify-content: space-between;
     }
@@ -201,9 +210,9 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e2e8f0;
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: 10px;
+      border-radius: 5px;
+      padding: 4px 6px;
+      font-size: 9px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -212,47 +221,47 @@
       background: #ef4444;
       border: none;
       color: white;
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: 10px;
+      border-radius: 5px;
+      padding: 4px 6px;
+      font-size: 9px;
       font-weight: 700;
       cursor: pointer;
     }
 
     .empty-msg {
       color: #64748b;
-      font-size: 11px;
+      font-size: 10px;
       text-align: center;
-      padding: 12px 0;
+      padding: 8px 0;
     }
 
     .screenshot-btn {
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 8px;
+      border-radius: 6px;
+      padding: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 11px;
+      font-size: 10px;
     }
 
     .control-btn.delete {
       background: #ef4444;
       color: white;
       border: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: bold;
     }
 
@@ -263,9 +272,9 @@
       transform: translateX(-50%);
       background: rgba(16, 185, 129, 0.95);
       color: white;
-      padding: 10px 20px;
+      padding: 8px 16px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       z-index: 2000;
       pointer-events: none;
@@ -283,6 +292,19 @@
 <div id="map"></div>
 
 <div class="controls-panel" id="ui-panel">
+  <!-- Новые иконки -->
+  <div class="panel-section">
+    <div class="panel-title">Новые иконки</div>
+    <div class="icons-grid">
+      <button class="icon-btn" onclick="addIconMarker('new1.png', 'Шахед (new)')">
+        <img src="icons/new1.png" alt="Шахед"> Шахед
+      </button>
+      <button class="icon-btn" onclick="addIconMarker('new2.png', 'Реактивный (new)')">
+        <img src="icons/new2.png" alt="Реактивный"> Реактивный
+      </button>
+    </div>
+  </div>
+
   <div class="panel-section">
     <div class="panel-title">Добавить объект</div>
     <div class="icons-grid">
@@ -325,7 +347,7 @@
     <div class="batch-actions">
       <button class="btn-secondary" onclick="selectAllObjects(true)">Выбрать все</button>
       <button class="btn-secondary" onclick="selectAllObjects(false)">Снять выбор</button>
-      <button class="btn-danger" onclick="deleteSelectedObjects()">Удалить выбранные</button>
+      <button class="btn-danger" onclick="deleteSelectedObjects()">Удалить</button>
     </div>
 
     <div class="objects-list-wrapper" id="objects-list">
@@ -351,98 +373,222 @@
   let hoveredDroneId = null;
 
   const places = [
-    // Основные города Шосткинского района
+    // Сумська область (основні міста та райцентри)
+    { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
     { name: "Шостка", coords: [33.4729, 51.8638], size: "large" },
-    { name: "Новгород-Сіверський", coords: [33.2796, 52.0040], size: "large" },
     { name: "Глухів", coords: [33.9148, 51.6787], size: "large" },
     { name: "Кролевець", coords: [33.3833, 51.5474], size: "large" },
-
-    { name: "Середина-Буда", coords: [34.0288, 52.1849], size: "medium" },
-    { name: "Зноб-Новгородське", coords: [33.6003, 52.2636], size: "medium" },
-    { name: "Ямпіль", coords: [33.7802, 51.9453], size: "medium" },
-    { name: "Свеса", coords: [33.9354, 51.9453], size: "medium" },
-    { name: "Есмань", coords: [34.0659, 51.7673], size: "medium" },
-    { name: "Шалигине", coords: [34.1002, 51.5739], size: "medium" },
-    { name: "Вороніж", coords: [33.4781, 51.7755], size: "medium" },
-
-    { name: "Уралове", coords: [33.5571, 52.1872], size: "small" },
-    { name: "Очкине", coords: [33.3713, 52.2261], size: "small" },
-    { name: "Слоут", coords: [33.7970, 51.7596], size: "small" },
-    { name: "Богданівка", coords: [33.3325, 51.8954], size: "small" },
-    { name: "Собич", coords: [33.2587, 51.8602], size: "small" },
-    { name: "Пирогівка", coords: [33.2824, 51.9148], size: "small" },
-    { name: "Тиманівка", coords: [33.1276, 51.7709], size: "small" },
-    { name: "Клишки", coords: [33.3030, 51.7641], size: "small" },
-    { name: "Степне", coords: [33.752664, 52.084731], size: "small" },
-    { name: "Хутір-Михайлівський", coords: [33.899980, 52.045093], size: "medium" },
-    { name: "Миронівка", coords: [33.555312, 51.904937], size: "small" },
-    { name: "Береза", coords: [33.859720, 51.734766], size: "small" },
-    { name: "Івот", coords: [33.486329, 51.983202], size: "small" },
-    { name: "Каліївка", coords: [33.533156, 52.059774], size: "small" },
-    { name: "Шатрище", coords: [33.684786, 52.026218], size: "small" },
-
-    // Другие крупные города Сумской области
-    { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
-    { name: "Чернігів", coords: [31.28655978, 51.50541414], size: "large" },
     { name: "Конотоп", coords: [33.20040213, 51.23250772], size: "large" },
     { name: "Охтирка", coords: [34.89467602, 50.30852254], size: "large" },
     { name: "Ромни", coords: [33.49520264, 50.74025149], size: "large" },
+    { name: "Путивль", coords: [33.86884747, 51.33529242], size: "large" },
+    { name: "Тростянець", coords: [34.965668, 50.484778], size: "large" },
+    { name: "Охтирка", coords: [34.89467602, 50.30852254], size: "large" },
+    { name: "Лебедин", coords: [34.48258115, 50.58227558], size: "medium" },
+    { name: "Буринь", coords: [33.83337859, 51.19935882], size: "medium" },
+    { name: "Білопілля", coords: [34.31078602, 51.14747465], size: "medium" },
+    { name: "Краснопілля", coords: [35.256328, 50.773886], size: "medium" },
+    { name: "Велика Писарівка", coords: [35.482992, 50.423354], size: "medium" },
+    { name: "Ворожба", coords: [34.226649, 51.173162], size: "medium" },
+    { name: "Ямпіль", coords: [33.7802, 51.9453], size: "medium" },
+    { name: "Середина-Буда", coords: [34.0288, 52.1849], size: "medium" },
+
+    // Чернігівська область (основні міста та райцентри)
+    { name: "Чернігів", coords: [31.28655978, 51.50541414], size: "large" },
     { name: "Ніжин", coords: [31.88843512, 51.04772279], size: "large" },
     { name: "Прилуки", coords: [32.3923, 50.5843], size: "large" },
+    { name: "Новгород-Сіверський", coords: [33.2796, 52.0040], size: "large" },
+    { name: "Бахмач", coords: [32.783333, 51.183333], size: "large" },
     { name: "Корюківка", coords: [32.2709, 51.7766], size: "medium" },
     { name: "Городня", coords: [31.5973, 51.8841], size: "medium" },
     { name: "Сновськ", coords: [31.9575, 51.8499], size: "medium" },
     { name: "Борзна", coords: [32.4411, 51.2527], size: "medium" },
     { name: "Мена", coords: [32.216667, 51.516667], size: "medium" },
     { name: "Короп", coords: [32.95575, 51.56265], size: "medium" },
-    { name: "Буринь", coords: [33.83337859, 51.19935882], size: "medium" },
-    { name: "Білопілля", coords: [34.31078602, 51.14747465], size: "medium" },
-    { name: "Лебедин", coords: [34.48258115, 50.58227558], size: "medium" },
-
-    // Сумская область — вне Шосткинского района
-    { name: "Путивль", coords: [33.86884747, 51.33529242], size: "large" },
-    { name: "Тростянець", coords: [34.965668, 50.484778], size: "large" },
-    { name: "Краснопілля", coords: [35.256328, 50.773886], size: "medium" },
-    { name: "Велика Писарівка", coords: [35.482992, 50.423354], size: "medium" },
-    { name: "Ворожба", coords: [34.226649, 51.173162], size: "medium" },
-    { name: "Терни", coords: [33.970697, 50.989163], size: "medium" },
-    { name: "Миколаївка", coords: [34.373727, 50.941405], size: "medium" },
-    { name: "Річки", coords: [34.49398832, 51.12226017], size: "small" },
-    { name: "Старе Село", coords: [34.809338, 50.825996], size: "small" },
-    { name: "Грун", coords: [34.0, 50.5], size: "small" },
-    { name: "Попівка", coords: [33.11425821, 51.234291], size: "small" },
-    { name: "Чернеччина", coords: [34.80883998, 50.3041151], size: "small" },
-    { name: "Андріяшівка", coords: [33.518469, 50.515146], size: "small" },
-    { name: "Безжівка", coords: [33.763451, 51.002981], size: "small" },
-    { name: "Розсоші", coords: [35.443583, 50.335007], size: "small" },
-
-    // Черниговская область — вне Шосткинского района
-    { name: "Бахмач", coords: [32.783333, 51.183333], size: "large" },
-    { name: "Бобровиця", coords: [31.382047, 50.745594], size: "medium" },
     { name: "Ічня", coords: [32.394, 50.862], size: "medium" },
     { name: "Носівка", coords: [31.581, 50.931], size: "medium" },
     { name: "Остер", coords: [30.883, 50.95], size: "medium" },
     { name: "Козелець", coords: [31.116667, 50.9], size: "medium" },
-    { name: "Куликівка", coords: [31.643611, 51.374722], size: "small" },
     { name: "Сосниця", coords: [32.499722, 51.531111], size: "medium" },
     { name: "Варва", coords: [32.723611, 50.495], size: "medium" },
-    { name: "Талалаївка", coords: [33.140833, 50.837222], size: "small" },
-    { name: "Срібне", coords: [32.921667, 50.663056], size: "small" },
     { name: "Ріпки", coords: [31.083333, 51.8], size: "medium" },
-    { name: "Десна", coords: [30.766667, 50.927778], size: "small" },
-    { name: "Лосинівка", coords: [31.933333, 50.833333], size: "small" },
-    { name: "Ладан", coords: [32.583333, 50.516667], size: "small" },
-    { name: "Мала Дівиця", coords: [32.25, 50.55], size: "small" },
-    { name: "Понорниця", coords: [32.716667, 51.666667], size: "small" },
-    { name: "Добрянка", coords: [31.183333, 52.066667], size: "small" },
-    { name: "Любеч", coords: [30.65, 51.7], size: "small" },
-    { name: "Замглай", coords: [31.15, 51.833333], size: "small" },
-    { name: "Седнів", coords: [31.566667, 51.65], size: "small" },
-    { name: "Олишівка", coords: [31.333333, 51.216667], size: "small" },
-    { name: "Михайло-Коцюбинське", coords: [31.083333, 51.466667], size: "small" },
-    { name: "Дмитрівка", coords: [32.95, 51.083333], size: "small" },
-    { name: "Парафіївка", coords: [32.65, 50.8], size: "small" }
-  ];
+    { name: "Бобровиця", coords: [31.382047, 50.745594], size: "medium" },
+
+    // Столиця
+    { name: "Київ", coords: [30.5234, 50.4501], size: "large" },
+
+    // Київська область
+    { name: "Біла Церква", coords: [30.1167, 49.7989], size: "medium" },
+    { name: "Бориспіль", coords: [30.9531, 50.3528], size: "medium" },
+    { name: "Бровари", coords: [30.7908, 50.5114], size: "medium" },
+    { name: "Буча", coords: [30.2131, 50.5486], size: "medium" },
+    { name: "Вишгород", coords: [30.4853, 50.5847], size: "medium" },
+    { name: "Обухів", coords: [30.6225, 50.1147], size: "medium" },
+    { name: "Фастів", coords: [29.9181, 50.0781], size: "medium" },
+
+    // Вінницька область
+    { name: "Вінниця", coords: [28.4682, 49.2331], size: "large" },
+    { name: "Жмеринка", coords: [28.1061, 49.0378], size: "medium" },
+    { name: "Могилів-Подільський", coords: [27.7983, 48.4528], size: "medium" },
+    { name: "Гайсин", coords: [29.3878, 48.8106], size: "medium" },
+    { name: "Тульчин", coords: [28.8542, 48.6750], size: "medium" },
+    { name: "Хмільник", coords: [27.9572, 49.5569], size: "medium" },
+
+    // Волинська область
+    { name: "Луцьк", coords: [25.3254, 50.7472], size: "large" },
+    { name: "Ковель", coords: [24.7089, 51.2169], size: "medium" },
+    { name: "Володимир", coords: [24.3222, 50.8481], size: "medium" },
+    { name: "Камінь-Каширський", coords: [24.9608, 51.6258], size: "medium" },
+
+    // Дніпропетровська область
+    { name: "Дніпро", coords: [35.0462, 48.4647], size: "large" },
+    { name: "Кривий Ріг", coords: [33.3918, 47.9105], size: "medium" },
+    { name: "Кам'янське", coords: [34.6022, 48.5142], size: "medium" },
+    { name: "Нікополь", coords: [34.3975, 47.5681], size: "medium" },
+    { name: "Павлоград", coords: [35.8425, 48.5283], size: "medium" },
+    { name: "Новомосковськ", coords: [35.2636, 48.6417], size: "medium" },
+    { name: "Синельникове", coords: [35.5222, 48.3517], size: "medium" },
+
+    // Донецька область
+    { name: "Донецьк", coords: [37.8028, 48.0159], size: "large" },
+    { name: "Краматорськ", coords: [37.5844, 48.7392], size: "medium" },
+    { name: "Маріуполь", coords: [37.5494, 47.0978], size: "medium" },
+    { name: "Покровськ", coords: [37.1828, 48.2828], size: "medium" },
+    { name: "Бахмут", coords: [38.0025, 48.5986], size: "medium" },
+    { name: "Волноваха", coords: [37.4839, 47.5847], size: "medium" },
+    { name: "Горлівка", coords: [38.0025, 48.3061], size: "medium" },
+    { name: "Кальміуське", coords: [38.0833, 47.6667], size: "medium" },
+
+    // Житомирська область
+    { name: "Житомир", coords: [28.6587, 50.2546], size: "large" },
+    { name: "Бердичів", coords: [28.5831, 49.8919], size: "medium" },
+    { name: "Коростень", coords: [28.6486, 50.9497], size: "medium" },
+    { name: "Звягель", coords: [27.6378, 50.5833], size: "medium" },
+
+    // Закарпатська область
+    { name: "Ужгород", coords: [22.2879, 48.6208], size: "large" },
+    { name: "Мукачево", coords: [22.7183, 48.4414], size: "medium" },
+    { name: "Берегове", coords: [22.6439, 48.2078], size: "medium" },
+    { name: "Хуст", coords: [23.2981, 48.1747], size: "medium" },
+    { name: "Рахів", coords: [24.2081, 48.0539], size: "medium" },
+    { name: "Тячів", coords: [23.5722, 48.0158], size: "medium" },
+
+    // Запорізька область
+    { name: "Запоріжжя", coords: [35.1396, 47.8388], size: "large" },
+    { name: "Мелітополь", coords: [35.3686, 46.8489], size: "medium" },
+    { name: "Бердянськ", coords: [36.7872, 46.7556], size: "medium" },
+    { name: "Василівка", coords: [35.2142, 47.4361], size: "medium" },
+    { name: "Пологи", coords: [36.2625, 47.4764], size: "medium" },
+
+    // Івано-Франківська область
+    { name: "Івано-Франківськ", coords: [24.7111, 48.9226], size: "large" },
+    { name: "Калуш", coords: [24.3606, 49.0442], size: "medium" },
+    { name: "Коломия", coords: [25.0403, 48.5314], size: "medium" },
+    { name: "Надвірна", coords: [24.5714, 48.6325], size: "medium" },
+    { name: "Косів", coords: [25.0931, 48.3183], size: "medium" },
+    { name: "Верховина", coords: [24.8114, 48.1550], size: "medium" },
+
+    // Кіровоградська область
+    { name: "Кропивницький", coords: [32.2623, 48.5079], size: "large" },
+    { name: "Олександрія", coords: [33.1167, 48.6667], size: "medium" },
+    { name: "Голованівськ", coords: [30.4503, 48.3842], size: "medium" },
+    { name: "Новоукраїнка", coords: [31.5283, 48.3156], size: "medium" },
+
+    // Луганська область
+    { name: "Луганськ", coords: [39.3078, 48.5740], size: "large" },
+    { name: "Сєвєродонецьк", coords: [38.4908, 48.9481], size: "medium" },
+    { name: "Старобільськ", coords: [38.9056, 49.2781], size: "medium" },
+    { name: "Сватове", coords: [38.1556, 49.4086], size: "medium" },
+    { name: "Алчевськ", coords: [38.8028, 48.4781], size: "medium" },
+    { name: "Довжанськ", coords: [39.6508, 48.0778], size: "medium" },
+    { name: "Щастя", coords: [39.2319, 48.7381], size: "medium" },
+
+    // Львівська область
+    { name: "Львів", coords: [24.0311, 49.8397], size: "large" },
+    { name: "Дрогобич", coords: [23.5061, 49.3514], size: "medium" },
+    { name: "Стрий", coords: [23.8525, 49.2569], size: "medium" },
+    { name: "Самбір", coords: [23.1975, 49.5183], size: "medium" },
+    { name: "Червоноград", coords: [24.2306, 50.3867], size: "medium" },
+    { name: "Золочів", coords: [24.8931, 49.8067], size: "medium" },
+    { name: "Яворів", coords: [23.3931, 49.9328], size: "medium" },
+
+    // Миколаївська область
+    { name: "Миколаїв", coords: [31.9946, 46.9750], size: "large" },
+    { name: "Вознесенськ", coords: [31.3131, 47.5614], size: "medium" },
+    { name: "Первомайськ", coords: [30.8525, 48.0469], size: "medium" },
+    { name: "Баштанка", coords: [32.4419, 47.4042], size: "medium" },
+
+    // Одеська область
+    { name: "Одеса", coords: [30.7233, 46.4825], size: "large" },
+    { name: "Ізмаїл", coords: [28.8358, 45.3528], size: "medium" },
+    { name: "Білгород-Дністровський", coords: [30.3475, 46.1925], size: "medium" },
+    { name: "Подільськ", coords: [29.5358, 47.7419], size: "medium" },
+    { name: "Болград", coords: [28.6119, 45.6817], size: "medium" },
+    { name: "Березівка", coords: [30.9103, 47.2008], size: "medium" },
+    { name: "Роздільна", coords: [30.0739, 46.8522], size: "medium" },
+
+    // Полтавська область
+    { name: "Полтава", coords: [34.5514, 49.5883], size: "large" },
+    { name: "Кременчук", coords: [33.4167, 49.0667], size: "medium" },
+    { name: "Миргород", coords: [33.6083, 49.9661], size: "medium" },
+    { name: "Лубни", coords: [33.0039, 50.0125], size: "medium" },
+
+    // Рівненська область
+    { name: "Рівне", coords: [26.2516, 50.6199], size: "large" },
+    { name: "Вараш", coords: [25.8569, 51.3439], size: "medium" },
+    { name: "Дубно", coords: [25.7381, 50.4189], size: "medium" },
+    { name: "Сарни", coords: [26.6083, 51.3328], size: "medium" },
+
+    // Тернопільська область
+    { name: "Тернопіль", coords: [25.5948, 49.5535], size: "large" },
+    { name: "Чортків", coords: [25.7958, 49.0169], size: "medium" },
+    { name: "Кременець", coords: [25.7267, 50.1008], size: "medium" },
+
+    // Харківська область
+    { name: "Харків", coords: [36.2304, 49.9935], size: "large" },
+    { name: "Ізюм", coords: [37.2589, 49.1914], size: "medium" },
+    { name: "Лозова", coords: [36.3150, 48.8892], size: "medium" },
+    { name: "Куп'янськ", coords: [37.6167, 49.7167], size: "medium" },
+    { name: "Чугуїв", coords: [36.6869, 49.8358], size: "medium" },
+    { name: "Богодухів", coords: [35.5319, 50.1583], size: "medium" },
+    { name: "Красноград", coords: [35.4528, 49.3731], size: "medium" },
+
+    // Херсонська область
+    { name: "Херсон", coords: [32.6169, 46.6354], size: "large" },
+    { name: "Берислав", coords: [33.4267, 46.8389], size: "medium" },
+    { name: "Генічеськ", coords: [34.8039, 46.1758], size: "medium" },
+    { name: "Каховка", coords: [33.4869, 46.8122], size: "medium" },
+    { name: "Скадовськ", coords: [32.9097, 46.1189], size: "medium" },
+
+    // Хмельницька область
+    { name: "Хмельницький", coords: [26.9871, 49.4230], size: "large" },
+    { name: "Кам'янець-Подільський", coords: [26.5833, 48.6833], size: "medium" },
+    { name: "Шепетівка", coords: [27.0628, 50.1814], size: "medium" },
+
+    // Черкаська область
+    { name: "Черкаси", coords: [32.0621, 49.4444], size: "large" },
+    { name: "Умань", coords: [30.2217, 48.7483], size: "medium" },
+    { name: "Золотоноша", coords: [32.0431, 49.6672], size: "medium" },
+    { name: "Звенигородка", coords: [30.9678, 49.0717], size: "medium" },
+
+    // Чернівецька область
+    { name: "Чернівці", coords: [25.9358, 48.2921], size: "large" },
+    { name: "Вижниця", coords: [25.1825, 48.2439], size: "medium" },
+    { name: "Дністровськ", coords: [26.8394, 48.5133], size: "medium" },
+
+    // АР Крим та Севастополь
+    { name: "Сімферополь", coords: [34.1025, 44.9521], size: "large" },
+    { name: "Севастополь", coords: [33.5224, 44.6166], size: "large" },
+    { name: "Бахчисарай", coords: [33.8581, 44.7533], size: "medium" },
+    { name: "Білогірськ", coords: [34.6019, 45.0569], size: "medium" },
+    { name: "Джанкой", coords: [34.3933, 45.7086], size: "medium" },
+    { name: "Євпаторія", coords: [33.3667, 45.1903], size: "medium" },
+    { name: "Керч", coords: [36.4711, 45.3562], size: "medium" },
+    { name: "Курман", coords: [34.3167, 45.4925], size: "medium" },
+    { name: "Перекоп", coords: [33.6931, 45.9531], size: "medium" },
+    { name: "Феодосія", coords: [35.3792, 45.0317], size: "medium" },
+    { name: "Ялта", coords: [34.1667, 44.4994], size: "medium" }
+];
 
   const map = new maplibregl.Map({
     container: 'map',
@@ -454,6 +600,11 @@
           type: 'raster',
           tiles: ['https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'],
           tileSize: 256
+        },
+        'esri-satellite': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256
         }
       },
       layers: [
@@ -462,8 +613,19 @@
           type: 'raster',
           source: 'google-satellite',
           paint: {
-            'raster-saturation': -0.3,
-            'raster-brightness-max': 0.88
+            'raster-saturation': -1.0,
+            'raster-brightness-max': 0.52,
+            'raster-contrast': 0.05
+          }
+        },
+        {
+          id: 'esri-satellite-layer',
+          type: 'raster',
+          source: 'esri-satellite',
+          paint: {
+            'raster-saturation': -1.0,
+            'raster-brightness-max': 0.52,
+            'raster-contrast': 0.05
           }
         }
       ]
@@ -493,6 +655,7 @@
       console.error("Ошибка загрузки ukraine.geojson", e);
     }
 
+    // Маска затемнения ЗА пределами Украины (перекрывает Esri снаружи)
     if (ukraineRings.length > 0) {
       const worldBox = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
       const outsideMaskGeoJSON = {
@@ -509,8 +672,8 @@
         'type': 'fill',
         'source': 'outside-mask-src',
         'paint': {
-          'fill-color': '#060d17',
-          'fill-opacity': 0.75
+          'fill-color': '#1a1a1a',
+          'fill-opacity': 0.70
         }
       });
     }
@@ -521,13 +684,24 @@
     map.addSource('rayony-src', { type: 'geojson', data: 'rayony_ukrainy.geojson' });
     map.addSource('regions-src', { type: 'geojson', data: 'regions.geojson' });
 
+    // Слой легкого высветления внутри украины (для нужного стиля)
+    map.addLayer({
+      'id': 'ukraine-tint',
+      'type': 'fill',
+      'source': 'ukraine-src',
+      'paint': {
+        'fill-color': '#ffffff',
+        'fill-opacity': 0.05
+      }
+    });
+
     map.addLayer({
       'id': 'towns-fill',
       'type': 'fill',
       'source': 'towns-src',
       'paint': {
-        'fill-color': '#868786',
-        'fill-opacity': 0.45
+        'fill-color': '#dddddd',
+        'fill-opacity': 0.95
       }
     });
 
@@ -536,9 +710,9 @@
       'type': 'line',
       'source': 'towns-src',
       'paint': {
-        'line-color': '#868786',
-        'line-width': 1.8,
-        'line-opacity': 0.95
+        'line-color': '#dddddd',
+        'line-width': 1.0,
+        'line-opacity': 0.9
       }
     });
 
@@ -547,7 +721,7 @@
       'type': 'line',
       'source': 'traca-src',
       'paint': {
-        'line-color': '#E5C158',
+        'line-color': '#b8731d',
         'line-width': 1.6,
         'line-opacity': 0.85
       }
@@ -558,33 +732,31 @@
       'type': 'line',
       'source': 'ukraine-src',
       'paint': {
-        'line-color': '#8FA396',
-        'line-width': 1.5,
-        'line-opacity': 0.8
+        'line-color': '#787878',
+        'line-width': 2.5,
+        'line-opacity': 1.0
       }
     });
 
-    // Слой регионов (regions.geojson) — толщина 1.6px
     map.addLayer({
       'id': 'regions-border',
       'type': 'line',
       'source': 'regions-src',
       'paint': {
-        'line-color': '#ffffff',
-        'line-width': 1.6,
-        'line-opacity': 0.85
+        'line-color': '#787878',
+        'line-width': 1.5,
+        'line-opacity': 0.8
       }
     });
 
-    // Слой районов (rayony_ukrainy.geojson) — толщина 0.6px
     map.addLayer({
       'id': 'all-districts-border',
       'type': 'line',
       'source': 'rayony-src',
       'paint': {
-        'line-color': '#ffffff',
+        'line-color': '#787878',
         'line-width': 0.6,
-        'line-opacity': 0.75
+        'line-opacity': 0.6
       }
     });
 
