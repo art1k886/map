@@ -13,13 +13,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       background-color: #121212;
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow: hidden;
@@ -27,9 +24,7 @@
     
     #map {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
+      top: 0; bottom: 0; width: 100%;
     }
 
     .place-label {
@@ -71,8 +66,7 @@
 
     .controls-panel {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 10px; left: 10px;
       z-index: 1000;
       background: rgba(18, 18, 18, 0.92);
       backdrop-filter: blur(10px);
@@ -88,9 +82,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.6);
     }
 
-    .controls-panel::-webkit-scrollbar {
-      width: 4px;
-    }
+    .controls-panel::-webkit-scrollbar { width: 4px; }
     .controls-panel::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 4px;
@@ -137,8 +129,7 @@
     }
 
     .icon-btn img {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       object-fit: contain;
     }
 
@@ -154,9 +145,7 @@
       gap: 3px;
     }
 
-    .objects-list-wrapper::-webkit-scrollbar {
-      width: 3px;
-    }
+    .objects-list-wrapper::-webkit-scrollbar { width: 3px; }
     .objects-list-wrapper::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 3px;
@@ -176,9 +165,7 @@
       user-select: none;
     }
 
-    .object-item:hover {
-      background: rgba(56, 189, 248, 0.2);
-    }
+    .object-item:hover { background: rgba(56, 189, 248, 0.2); }
 
     .object-item-info {
       display: flex;
@@ -188,8 +175,7 @@
     }
 
     .object-item-info img {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       object-fit: contain;
     }
 
@@ -235,6 +221,38 @@
       padding: 8px 0;
     }
 
+    #screenshot-selection-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      cursor: crosshair;
+      background: rgba(5, 10, 20, 0.08);
+      user-select: none;
+      touch-action: none;
+    }
+    #screenshot-selection-rect {
+      position: fixed;
+      border: 2px solid #60a5fa;
+      background: rgba(96, 165, 250, 0.12);
+      box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+      display: none;
+    }
+    #screenshot-selection-hint {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 18, 18, 0.92);
+      color: #f1f5f9;
+      padding: 9px 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      font: 600 12px 'Plus Jakarta Sans', sans-serif;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
     .screenshot-btn {
       background: #2563eb;
       color: white;
@@ -254,8 +272,7 @@
       background: #ef4444;
       color: white;
       border: none;
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -267,8 +284,7 @@
 
     .toast {
       position: absolute;
-      bottom: 25px;
-      left: 50%;
+      bottom: 25px; left: 50%;
       transform: translateX(-50%);
       background: rgba(16, 185, 129, 0.95);
       color: white;
@@ -281,9 +297,124 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
+    .toast.show { opacity: 1; }
 
-    .toast.show {
-      opacity: 1;
+    /* ===== Настройки ===== */
+    .settings-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1100;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(18, 18, 18, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .settings-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      transform: scale(1.05);
+    }
+    .settings-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: #e2e8f0;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.4s ease;
+    }
+    .settings-btn.active svg {
+      transform: rotate(90deg);
+      stroke: #38bdf8;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 56px;
+      right: 10px;
+      z-index: 1099;
+      background: rgba(18, 18, 18, 0.96);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-width: 240px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .settings-menu.open {
+      display: flex;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .settings-label {
+      color: #e2e8f0;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .settings-label small {
+      display: block;
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    /* Тумблер */
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+    .toggle .slider::before {
+      content: "";
+      position: absolute;
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background: #e2e8f0;
+      border-radius: 50%;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .toggle input:checked + .slider {
+      background: #2563eb;
+    }
+    .toggle input:checked + .slider::before {
+      transform: translateX(16px);
+      background: #ffffff;
     }
   </style>
 </head>
@@ -291,8 +422,29 @@
 
 <div id="map"></div>
 
+<!-- Кнопка настроек -->
+<button class="settings-btn" id="settings-btn" title="Настройки">
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+</button>
+
+<!-- Меню настроек -->
+<div class="settings-menu" id="settings-menu">
+  <div class="settings-row">
+    <div class="settings-label">
+      Названия Н.П. с карты
+      <small>Убрать кастомные, показать стандартные</small>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="toggle-map-labels">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
 <div class="controls-panel" id="ui-panel">
-  <!-- Новые иконки -->
   <div class="panel-section">
     <div class="panel-title">Новые иконки</div>
     <div class="icons-grid">
@@ -371,9 +523,9 @@
   let loadedImages = new Set();
   let draggedFeatureId = null;
   let hoveredDroneId = null;
+  let customPlaceMarkers = []; // Храним кастомные маркеры для скрытия/показа
 
   const places = [
-    // Сумська область (основні міста та райцентри)
     { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
     { name: "Шостка", coords: [33.4729, 51.8638], size: "large" },
     { name: "Глухів", coords: [33.9148, 51.6787], size: "large" },
@@ -392,8 +544,6 @@
     { name: "Ворожба", coords: [34.226649, 51.173162], size: "medium" },
     { name: "Ямпіль", coords: [33.7802, 51.9453], size: "medium" },
     { name: "Середина-Буда", coords: [34.0288, 52.1849], size: "medium" },
-
-    // Чернігівська область (основні міста та райцентри)
     { name: "Чернігів", coords: [31.28655978, 51.50541414], size: "large" },
     { name: "Ніжин", coords: [31.88843512, 51.04772279], size: "large" },
     { name: "Прилуки", coords: [32.3923, 50.5843], size: "large" },
@@ -413,11 +563,7 @@
     { name: "Варва", coords: [32.723611, 50.495], size: "medium" },
     { name: "Ріпки", coords: [31.083333, 51.8], size: "medium" },
     { name: "Бобровиця", coords: [31.382047, 50.745594], size: "medium" },
-
-    // Столиця
     { name: "Київ", coords: [30.5234, 50.4501], size: "large" },
-
-    // Київська область
     { name: "Біла Церква", coords: [30.1167, 49.7989], size: "medium" },
     { name: "Бориспіль", coords: [30.9531, 50.3528], size: "medium" },
     { name: "Бровари", coords: [30.7908, 50.5114], size: "medium" },
@@ -425,22 +571,16 @@
     { name: "Вишгород", coords: [30.4853, 50.5847], size: "medium" },
     { name: "Обухів", coords: [30.6225, 50.1147], size: "medium" },
     { name: "Фастів", coords: [29.9181, 50.0781], size: "medium" },
-
-    // Вінницька область
     { name: "Вінниця", coords: [28.4682, 49.2331], size: "large" },
     { name: "Жмеринка", coords: [28.1061, 49.0378], size: "medium" },
     { name: "Могилів-Подільський", coords: [27.7983, 48.4528], size: "medium" },
     { name: "Гайсин", coords: [29.3878, 48.8106], size: "medium" },
     { name: "Тульчин", coords: [28.8542, 48.6750], size: "medium" },
     { name: "Хмільник", coords: [27.9572, 49.5569], size: "medium" },
-
-    // Волинська область
     { name: "Луцьк", coords: [25.3254, 50.7472], size: "large" },
     { name: "Ковель", coords: [24.7089, 51.2169], size: "medium" },
     { name: "Володимир", coords: [24.3222, 50.8481], size: "medium" },
     { name: "Камінь-Каширський", coords: [24.9608, 51.6258], size: "medium" },
-
-    // Дніпропетровська область
     { name: "Дніпро", coords: [35.0462, 48.4647], size: "large" },
     { name: "Кривий Ріг", coords: [33.3918, 47.9105], size: "medium" },
     { name: "Кам'янське", coords: [34.6022, 48.5142], size: "medium" },
@@ -448,8 +588,6 @@
     { name: "Павлоград", coords: [35.8425, 48.5283], size: "medium" },
     { name: "Новомосковськ", coords: [35.2636, 48.6417], size: "medium" },
     { name: "Синельникове", coords: [35.5222, 48.3517], size: "medium" },
-
-    // Донецька область
     { name: "Донецьк", coords: [37.8028, 48.0159], size: "large" },
     { name: "Краматорськ", coords: [37.5844, 48.7392], size: "medium" },
     { name: "Маріуполь", coords: [37.5494, 47.0978], size: "medium" },
@@ -458,43 +596,31 @@
     { name: "Волноваха", coords: [37.4839, 47.5847], size: "medium" },
     { name: "Горлівка", coords: [38.0025, 48.3061], size: "medium" },
     { name: "Кальміуське", coords: [38.0833, 47.6667], size: "medium" },
-
-    // Житомирська область
     { name: "Житомир", coords: [28.6587, 50.2546], size: "large" },
     { name: "Бердичів", coords: [28.5831, 49.8919], size: "medium" },
     { name: "Коростень", coords: [28.6486, 50.9497], size: "medium" },
     { name: "Звягель", coords: [27.6378, 50.5833], size: "medium" },
-
-    // Закарпатська область
     { name: "Ужгород", coords: [22.2879, 48.6208], size: "large" },
     { name: "Мукачево", coords: [22.7183, 48.4414], size: "medium" },
     { name: "Берегове", coords: [22.6439, 48.2078], size: "medium" },
     { name: "Хуст", coords: [23.2981, 48.1747], size: "medium" },
     { name: "Рахів", coords: [24.2081, 48.0539], size: "medium" },
     { name: "Тячів", coords: [23.5722, 48.0158], size: "medium" },
-
-    // Запорізька область
     { name: "Запоріжжя", coords: [35.1396, 47.8388], size: "large" },
     { name: "Мелітополь", coords: [35.3686, 46.8489], size: "medium" },
     { name: "Бердянськ", coords: [36.7872, 46.7556], size: "medium" },
     { name: "Василівка", coords: [35.2142, 47.4361], size: "medium" },
     { name: "Пологи", coords: [36.2625, 47.4764], size: "medium" },
-
-    // Івано-Франківська область
     { name: "Івано-Франківськ", coords: [24.7111, 48.9226], size: "large" },
     { name: "Калуш", coords: [24.3606, 49.0442], size: "medium" },
     { name: "Коломия", coords: [25.0403, 48.5314], size: "medium" },
     { name: "Надвірна", coords: [24.5714, 48.6325], size: "medium" },
     { name: "Косів", coords: [25.0931, 48.3183], size: "medium" },
     { name: "Верховина", coords: [24.8114, 48.1550], size: "medium" },
-
-    // Кіровоградська область
     { name: "Кропивницький", coords: [32.2623, 48.5079], size: "large" },
     { name: "Олександрія", coords: [33.1167, 48.6667], size: "medium" },
     { name: "Голованівськ", coords: [30.4503, 48.3842], size: "medium" },
     { name: "Новоукраїнка", coords: [31.5283, 48.3156], size: "medium" },
-
-    // Луганська область
     { name: "Луганськ", coords: [39.3078, 48.5740], size: "large" },
     { name: "Сєвєродонецьк", coords: [38.4908, 48.9481], size: "medium" },
     { name: "Старобільськ", coords: [38.9056, 49.2781], size: "medium" },
@@ -502,8 +628,6 @@
     { name: "Алчевськ", coords: [38.8028, 48.4781], size: "medium" },
     { name: "Довжанськ", coords: [39.6508, 48.0778], size: "medium" },
     { name: "Щастя", coords: [39.2319, 48.7381], size: "medium" },
-
-    // Львівська область
     { name: "Львів", coords: [24.0311, 49.8397], size: "large" },
     { name: "Дрогобич", coords: [23.5061, 49.3514], size: "medium" },
     { name: "Стрий", coords: [23.8525, 49.2569], size: "medium" },
@@ -511,14 +635,10 @@
     { name: "Червоноград", coords: [24.2306, 50.3867], size: "medium" },
     { name: "Золочів", coords: [24.8931, 49.8067], size: "medium" },
     { name: "Яворів", coords: [23.3931, 49.9328], size: "medium" },
-
-    // Миколаївська область
     { name: "Миколаїв", coords: [31.9946, 46.9750], size: "large" },
     { name: "Вознесенськ", coords: [31.3131, 47.5614], size: "medium" },
     { name: "Первомайськ", coords: [30.8525, 48.0469], size: "medium" },
     { name: "Баштанка", coords: [32.4419, 47.4042], size: "medium" },
-
-    // Одеська область
     { name: "Одеса", coords: [30.7233, 46.4825], size: "large" },
     { name: "Ізмаїл", coords: [28.8358, 45.3528], size: "medium" },
     { name: "Білгород-Дністровський", coords: [30.3475, 46.1925], size: "medium" },
@@ -526,25 +646,17 @@
     { name: "Болград", coords: [28.6119, 45.6817], size: "medium" },
     { name: "Березівка", coords: [30.9103, 47.2008], size: "medium" },
     { name: "Роздільна", coords: [30.0739, 46.8522], size: "medium" },
-
-    // Полтавська область
     { name: "Полтава", coords: [34.5514, 49.5883], size: "large" },
     { name: "Кременчук", coords: [33.4167, 49.0667], size: "medium" },
     { name: "Миргород", coords: [33.6083, 49.9661], size: "medium" },
     { name: "Лубни", coords: [33.0039, 50.0125], size: "medium" },
-
-    // Рівненська область
     { name: "Рівне", coords: [26.2516, 50.6199], size: "large" },
     { name: "Вараш", coords: [25.8569, 51.3439], size: "medium" },
     { name: "Дубно", coords: [25.7381, 50.4189], size: "medium" },
     { name: "Сарни", coords: [26.6083, 51.3328], size: "medium" },
-
-    // Тернопільська область
     { name: "Тернопіль", coords: [25.5948, 49.5535], size: "large" },
     { name: "Чортків", coords: [25.7958, 49.0169], size: "medium" },
     { name: "Кременець", coords: [25.7267, 50.1008], size: "medium" },
-
-    // Харківська область
     { name: "Харків", coords: [36.2304, 49.9935], size: "large" },
     { name: "Ізюм", coords: [37.2589, 49.1914], size: "medium" },
     { name: "Лозова", coords: [36.3150, 48.8892], size: "medium" },
@@ -552,31 +664,21 @@
     { name: "Чугуїв", coords: [36.6869, 49.8358], size: "medium" },
     { name: "Богодухів", coords: [35.5319, 50.1583], size: "medium" },
     { name: "Красноград", coords: [35.4528, 49.3731], size: "medium" },
-
-    // Херсонська область
     { name: "Херсон", coords: [32.6169, 46.6354], size: "large" },
     { name: "Берислав", coords: [33.4267, 46.8389], size: "medium" },
     { name: "Генічеськ", coords: [34.8039, 46.1758], size: "medium" },
     { name: "Каховка", coords: [33.4869, 46.8122], size: "medium" },
     { name: "Скадовськ", coords: [32.9097, 46.1189], size: "medium" },
-
-    // Хмельницька область
     { name: "Хмельницький", coords: [26.9871, 49.4230], size: "large" },
     { name: "Кам'янець-Подільський", coords: [26.5833, 48.6833], size: "medium" },
     { name: "Шепетівка", coords: [27.0628, 50.1814], size: "medium" },
-
-    // Черкаська область
     { name: "Черкаси", coords: [32.0621, 49.4444], size: "large" },
     { name: "Умань", coords: [30.2217, 48.7483], size: "medium" },
     { name: "Золотоноша", coords: [32.0431, 49.6672], size: "medium" },
     { name: "Звенигородка", coords: [30.9678, 49.0717], size: "medium" },
-
-    // Чернівецька область
     { name: "Чернівці", coords: [25.9358, 48.2921], size: "large" },
     { name: "Вижниця", coords: [25.1825, 48.2439], size: "medium" },
     { name: "Дністровськ", coords: [26.8394, 48.5133], size: "medium" },
-
-    // АР Крим та Севастополь
     { name: "Сімферополь", coords: [34.1025, 44.9521], size: "large" },
     { name: "Севастополь", coords: [33.5224, 44.6166], size: "large" },
     { name: "Бахчисарай", coords: [33.8581, 44.7533], size: "medium" },
@@ -588,13 +690,14 @@
     { name: "Перекоп", coords: [33.6931, 45.9531], size: "medium" },
     { name: "Феодосія", coords: [35.3792, 45.0317], size: "medium" },
     { name: "Ялта", coords: [34.1667, 44.4994], size: "medium" }
-];
+  ];
 
   const map = new maplibregl.Map({
     container: 'map',
     preserveDrawingBuffer: true,
     style: {
       version: 8,
+      glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
       sources: {
         'google-satellite': {
           type: 'raster',
@@ -605,6 +708,11 @@
           type: 'raster',
           tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
           tileSize: 256
+        },
+        // Векторный источник для подписей Н.П. (OpenFreeMap / OpenMapTiles)
+        'openmaptiles': {
+          type: 'vector',
+          url: 'https://tiles.openfreemap.org/planet'
         }
       },
       layers: [
@@ -655,7 +763,6 @@
       console.error("Ошибка загрузки ukraine.geojson", e);
     }
 
-    // Маска затемнения ЗА пределами Украины (перекрывает Esri снаружи)
     if (ukraineRings.length > 0) {
       const worldBox = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
       const outsideMaskGeoJSON = {
@@ -684,7 +791,6 @@
     map.addSource('rayony-src', { type: 'geojson', data: 'rayony_ukrainy.geojson' });
     map.addSource('regions-src', { type: 'geojson', data: 'regions.geojson' });
 
-    // Слой легкого высветления внутри украины (для нужного стиля)
     map.addLayer({
       'id': 'ukraine-tint',
       'type': 'fill',
@@ -760,6 +866,46 @@
       }
     });
 
+    // ===== Слой подписей Н.П. из векторного источника =====
+    map.addLayer({
+      id: 'place-labels',
+      type: 'symbol',
+      source: 'openmaptiles',
+      'source-layer': 'place',
+      filter: [
+        'all',
+        ['==', ['geometry-type'], 'Point'],
+        ['in', ['get', 'class'], ['literal', ['city', 'town', 'village', 'hamlet']]],
+        ['has', 'name:uk']
+      ],
+      layout: {
+        'text-field': ['get', 'name:uk'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': [
+          'interpolate', ['linear'], ['zoom'],
+          4, 9,
+          6, 10,
+          8, 11,
+          10, 12,
+          12, 13
+        ],
+        'text-anchor': 'center',
+        'text-allow-overlap': false,
+        'text-ignore-placement': false,
+        'text-padding': 2,
+        'text-max-width': 8
+      },
+      paint: {
+        'text-color': '#bbbbbb',
+        'text-halo-width': 0
+      },
+      minzoom: 5,
+      maxzoom: 14
+    });
+
+    // Изначально слой скрыт
+    map.setLayoutProperty('place-labels', 'visibility', 'none');
+
     map.addSource('drones-src', {
       type: 'geojson',
       data: {
@@ -783,11 +929,13 @@
       }
     });
 
+    // Сохраняем кастомные маркеры
     places.forEach(place => {
       const el = document.createElement('div');
       el.className = `place-label ${place.size}`;
       el.innerText = place.name;
-      new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(place.coords).addTo(map);
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(place.coords).addTo(map);
+      customPlaceMarkers.push(marker);
     });
 
     map.on('mousedown', 'drones-layer', (e) => {
@@ -864,6 +1012,25 @@
         }
       }
     }, { passive: false, capture: true });
+
+    // ===== Обработка тумблера =====
+    const toggleMapLabels = document.getElementById('toggle-map-labels');
+    toggleMapLabels.addEventListener('change', () => {
+      const showMapLabels = toggleMapLabels.checked;
+      if (showMapLabels) {
+        // Скрыть кастомные
+        customPlaceMarkers.forEach(m => m.remove());
+        // Показать слой с карты
+        map.setLayoutProperty('place-labels', 'visibility', 'visible');
+      } else {
+        // Показать кастомные
+        customPlaceMarkers.forEach(m => {
+          m.addTo(map);
+        });
+        // Скрыть слой с карты
+        map.setLayoutProperty('place-labels', 'visibility', 'none');
+      }
+    });
   });
 
   async function ensureImageLoaded(fileName) {
@@ -982,28 +1149,245 @@
   }
 
   async function takeScreenshot() {
+    if (document.getElementById('screenshot-selection-layer')) return;
+
     const uiPanel = document.getElementById('ui-panel');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsMenu = document.getElementById('settings-menu');
+    const toast = document.getElementById('toast');
+    const oldPanelDisplay = uiPanel.style.display;
+    const oldSettingsBtnDisplay = settingsBtn.style.display;
+    const oldSettingsMenuDisplay = settingsMenu.style.display;
+    const labelToggle = document.getElementById('toggle-map-labels');
+    const oldMapLabelsVisibility = map.getLayoutProperty('place-labels', 'visibility');
+
+    // Убираем интерфейс на время выбора, но не меняем положение/масштаб карты.
     uiPanel.style.display = 'none';
+    settingsBtn.style.display = 'none';
+    settingsMenu.style.display = 'none';
 
-    map.jumpTo({ center: SHOSTKA_CENTER, zoom: TARGET_ZOOM, bearing: 0, pitch: 0 });
-    await new Promise(resolve => setTimeout(resolve, 200));
+    const layer = document.createElement('div');
+    layer.id = 'screenshot-selection-layer';
+    const rect = document.createElement('div');
+    rect.id = 'screenshot-selection-rect';
+    const hint = document.createElement('div');
+    hint.id = 'screenshot-selection-hint';
+    hint.textContent = 'Зажми ЛКМ и выдели область • Esc — отмена';
+    layer.append(rect, hint);
+    document.body.appendChild(layer);
 
-    try {
-      const mapCanvas = map.getCanvas();
-      mapCanvas.toBlob(async (blob) => {
-        if (blob) {
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-          const toast = document.getElementById('toast');
-          toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 2500);
+    let startX = 0, startY = 0, currentX = 0, currentY = 0;
+    let dragging = false;
+    let finished = false;
+
+    const restoreUi = () => {
+      layer.remove();
+      uiPanel.style.display = oldPanelDisplay;
+      settingsBtn.style.display = oldSettingsBtnDisplay;
+      settingsMenu.style.display = oldSettingsMenuDisplay;
+      map.setLayoutProperty('place-labels', 'visibility', oldMapLabelsVisibility || 'none');
+    };
+
+    const drawRect = () => {
+      const left = Math.min(startX, currentX);
+      const top = Math.min(startY, currentY);
+      rect.style.left = `${left}px`;
+      rect.style.top = `${top}px`;
+      rect.style.width = `${Math.abs(currentX - startX)}px`;
+      rect.style.height = `${Math.abs(currentY - startY)}px`;
+      rect.style.display = 'block';
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape' && !finished) {
+        finished = true;
+        cleanupListeners();
+        restoreUi();
+      }
+    };
+    const cleanupListeners = () => {
+      layer.removeEventListener('pointerdown', onPointerDown);
+      layer.removeEventListener('pointermove', onPointerMove);
+      layer.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+    const onPointerDown = (e) => {
+      if (e.button !== 0 || finished) return;
+      e.preventDefault();
+      dragging = true;
+      startX = currentX = e.clientX;
+      startY = currentY = e.clientY;
+      drawRect();
+    };
+    const onPointerMove = (e) => {
+      if (!dragging || finished) return;
+      currentX = e.clientX;
+      currentY = e.clientY;
+      drawRect();
+    };
+    const onPointerUp = async (e) => {
+      if (!dragging || finished || e.button !== 0) return;
+      dragging = false;
+      currentX = e.clientX;
+      currentY = e.clientY;
+      drawRect();
+      finished = true;
+      cleanupListeners();
+
+      const left = Math.max(0, Math.min(startX, currentX));
+      const top = Math.max(0, Math.min(startY, currentY));
+      const width = Math.min(window.innerWidth, Math.max(startX, currentX)) - left;
+      const height = Math.min(window.innerHeight, Math.max(startY, currentY)) - top;
+      if (width < 12 || height < 12) {
+        restoreUi();
+        return;
+      }
+
+      let originalPixelRatio = null;
+      let highResolutionRenderEnabled = false;
+      try {
+        // Перерисовываем карту в повышенном pixel ratio ДО захвата, а не растягиваем
+        // маленький готовый кадр. Это повышает чёткость векторных объектов и подписей.
+        map.setLayoutProperty('place-labels', 'visibility', 'none');
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        const initialCanvas = map.getCanvas();
+        const initialRect = initialCanvas.getBoundingClientRect();
+        originalPixelRatio = initialCanvas.width / Math.max(1, initialRect.width);
+        const scale = Math.min(4, 3840 / Math.max(width, height));
+
+        // Ограничиваем размер WebGL canvas, чтобы не упереться в лимит видеокарты.
+        // На большинстве компьютеров это позволяет рендерить всю карту минимум в 2x,
+        // а выделенную область сохранять до 3840 px по длинной стороне.
+        if (typeof map.setPixelRatio === 'function') {
+          const maxCanvasSide = 8192;
+          const safeRatio = Math.min(
+            Math.max(originalPixelRatio, scale),
+            maxCanvasSide / Math.max(1, initialRect.width),
+            maxCanvasSide / Math.max(1, initialRect.height)
+          );
+          if (safeRatio > originalPixelRatio + 0.01) {
+            map.setPixelRatio(safeRatio);
+            highResolutionRenderEnabled = true;
+            map.resize();
+            await new Promise(resolve => {
+              let done = false;
+              const finish = () => { if (!done) { done = true; map.off('idle', finish); resolve(); } };
+              map.once('idle', finish);
+              setTimeout(finish, 1800);
+              map.triggerRepaint();
+            });
+          }
         }
-      }, 'image/png');
-    } catch (e) {
-      console.error(e);
-    } finally {
-      uiPanel.style.display = 'flex';
-    }
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        const mapCanvas = map.getCanvas();
+        const canvasRect = mapCanvas.getBoundingClientRect();
+        const dprX = mapCanvas.width / Math.max(1, canvasRect.width);
+        const dprY = mapCanvas.height / Math.max(1, canvasRect.height);
+        const sx = Math.max(0, Math.round((left - canvasRect.left) * dprX));
+        const sy = Math.max(0, Math.round((top - canvasRect.top) * dprY));
+        const sw = Math.max(1, Math.min(Math.round(width * dprX), mapCanvas.width - sx));
+        const sh = Math.max(1, Math.min(Math.round(height * dprY), mapCanvas.height - sy));
+        const out = document.createElement('canvas');
+        out.width = Math.max(1, Math.round(width * scale));
+        out.height = Math.max(1, Math.round(height * scale));
+        const ctx = out.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(mapCanvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
+
+        // Всегда используем кастомные названия Н.П., независимо от положения переключателя.
+        ctx.save();
+        ctx.scale(scale, scale);
+        places.forEach(place => {
+          const point = map.project(place.coords);
+          const x = point.x + canvasRect.left - left;
+          const y = point.y + canvasRect.top - top;
+          if (x < -180 || y < -30 || x > width + 180 || y > height + 30) return;
+          let fontSize = 10, weight = 600, letterSpacing = 0, shadowBlur = 2;
+          if (place.size === 'large') { fontSize = 13; weight = 800; letterSpacing = 0.4; shadowBlur = 6; }
+          else if (place.size === 'medium') { fontSize = 11; weight = 700; letterSpacing = 0.2; shadowBlur = 3; }
+          ctx.font = `${weight} ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#bbbbbb';
+          ctx.shadowColor = 'rgba(26,26,26,0.95)';
+          ctx.shadowBlur = shadowBlur;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 1;
+          if ('letterSpacing' in ctx) ctx.letterSpacing = `${letterSpacing}px`;
+          ctx.fillText(place.name, x, y);
+        });
+        ctx.restore();
+
+        const blob = await new Promise(resolve => out.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Не удалось сформировать PNG');
+        let copied = false;
+        if (navigator.clipboard && window.ClipboardItem) {
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            copied = true;
+          } catch (err) {
+            console.warn('Не удалось скопировать изображение, будет скачивание:', err);
+          }
+        }
+        if (!copied) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `map-screenshot-${out.width}x${out.height}.png`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+        toast.textContent = copied
+          ? `Скриншот ${out.width}×${out.height} скопирован в буфер обмена`
+          : `Скриншот ${out.width}×${out.height} сохранён в PNG`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      } catch (err) {
+        console.error('Ошибка скриншота:', err);
+        toast.textContent = 'Не удалось сделать скриншот. Попробуй ещё раз.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      } finally {
+        // Возвращаем обычную производительность карты после скриншота.
+        if (highResolutionRenderEnabled && originalPixelRatio !== null && typeof map.setPixelRatio === 'function') {
+          try {
+            map.setPixelRatio(originalPixelRatio);
+            map.resize();
+            map.triggerRepaint();
+          } catch (restoreError) {
+            console.warn('Не удалось вернуть исходное разрешение карты:', restoreError);
+          }
+        }
+        restoreUi();
+      }
+    };
+
+    layer.addEventListener('pointerdown', onPointerDown);
+    layer.addEventListener('pointermove', onPointerMove);
+    layer.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('keydown', onKeyDown);
   }
+
+  // ===== Настройки: открытие/закрытие меню =====
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsMenu = document.getElementById('settings-menu');
+
+  settingsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    settingsBtn.classList.toggle('active');
+    settingsMenu.classList.toggle('open');
+  });
+
+  // Закрытие при клике вне меню
+  document.addEventListener('click', (e) => {
+    if (!settingsMenu.contains(e.target) && !settingsBtn.contains(e.target)) {
+      settingsMenu.classList.remove('open');
+      settingsBtn.classList.remove('active');
+    }
+  });
 </script>
 
 </body>
