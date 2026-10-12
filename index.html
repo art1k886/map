@@ -221,6 +221,90 @@
       padding: 8px 0;
     }
 
+    /* ===== Настоящий Liquid Glass Блок Легенды и Дисклеймера ===== */
+    .legend-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 15px;
+      z-index: 1000;
+      
+      /* Полуупрозрачная линзовая подложка */
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      
+      /* Мягкие обтекаемые края капли */
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 12px 16px;
+      
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      
+      /* Сложные внутренние и внешние тени для объема */
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        inset 0 2px 3px rgba(255, 255, 255, 0.8),
+        inset 0 8px 18px rgba(255, 255, 255, 0.25),
+        inset 0 -6px 14px rgba(0, 0, 0, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+
+      pointer-events: none;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* Верхний глянцевый блик */
+    .legend-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(
+        180deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        rgba(255, 255, 255, 0.05) 75%, 
+        transparent 100%
+      );
+      border-radius: 24px 24px 80px 80px / 24px 24px 15px 15px;
+      pointer-events: none;
+    }
+
+    .disclaimer-text {
+      color: #e2e8f0;
+      font-size: 10.5px;
+      font-weight: 600;
+      line-height: 1.35;
+      max-width: 230px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    }
+
+    .legend-item img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+
     #screenshot-selection-layer {
       position: fixed;
       inset: 0;
@@ -347,11 +431,11 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 10px;
       padding: 10px 12px;
-      min-width: 240px;
+      min-width: 250px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.7);
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .settings-menu.open {
       display: flex;
@@ -362,6 +446,12 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+    }
+
+    .settings-row-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .settings-label {
@@ -416,6 +506,48 @@
       transform: translateX(16px);
       background: #ffffff;
     }
+
+    /* Слайдер насыщенности */
+    .range-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .range-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .range-value {
+      color: #38bdf8;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 32px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -442,6 +574,17 @@
       <span class="slider"></span>
     </label>
   </div>
+
+  <div class="settings-row-vertical">
+    <div class="settings-label">
+      Насыщенность карты
+      <small>Регулировка цвета подложки спутника</small>
+    </div>
+    <div class="range-control">
+      <input type="range" id="saturation-slider" class="range-slider" min="-100" max="100" value="-100">
+      <span class="range-value" id="saturation-value">0%</span>
+    </div>
+  </div>
 </div>
 
 <div class="controls-panel" id="ui-panel">
@@ -451,7 +594,7 @@
       <button class="icon-btn" onclick="addIconMarker('new1.png', 'Шахед (new)')">
         <img src="icons/new1.png" alt="Шахед"> Шахед
       </button>
-      <button class="icon-btn" onclick="addIconMarker('new2.png', 'Реактивный (new)')">
+      <button class="icon-btn" onclick="addIconMarker('new2.png', 'Реактивний (new)')">
         <img src="icons/new2.png" alt="Реактивный"> Реактивный
       </button>
     </div>
@@ -510,6 +653,21 @@
   <button class="screenshot-btn" onclick="takeScreenshot()">
     Сделать скриншот
   </button>
+</div>
+
+<!-- Блок дисклеймера и типов БПЛА в стиле Liquid Glass -->
+<div class="legend-panel">
+  <div class="disclaimer-text">Дані беруться з відкритих джерел та наносяться вручну</div>
+  <div class="legend-items">
+    <div class="legend-item">
+      <img src="icons/new1.png" alt="Шахед / БпЛА">
+      <span>Шахед</span>
+    </div>
+    <div class="legend-item">
+      <img src="icons/new2.png" alt="Реактивний / Бандероль">
+      <span>Реактивний</span>
+    </div>
+  </div>
 </div>
 
 <div id="toast" class="toast">Скриншот района скопирован в буфер обмена!</div>
@@ -709,7 +867,6 @@
           tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
           tileSize: 256
         },
-        // Векторный источник для подписей Н.П. (OpenFreeMap / OpenMapTiles)
         'openmaptiles': {
           type: 'vector',
           url: 'https://tiles.openfreemap.org/planet'
@@ -790,6 +947,7 @@
     map.addSource('traca-src', { type: 'geojson', data: 'traca.geojson' });
     map.addSource('rayony-src', { type: 'geojson', data: 'rayony_ukrainy.geojson' });
     map.addSource('regions-src', { type: 'geojson', data: 'regions.geojson' });
+    map.addSource('obl-src', { type: 'geojson', data: 'obl.geojson' });
 
     map.addLayer({
       'id': 'ukraine-tint',
@@ -854,6 +1012,17 @@
         'line-opacity': 0.8
       }
     });
+    
+    map.addLayer({
+      'id': 'obl-border',
+      'type': 'line',
+      'source': 'obl-src',
+      'paint': {
+        'line-color': '#444444',     
+        'line-width': 1.8,         
+        'line-opacity': 0.95      
+      }
+    });
 
     map.addLayer({
       'id': 'all-districts-border',
@@ -866,7 +1035,6 @@
       }
     });
 
-    // ===== Слой подписей Н.П. из векторного источника =====
     map.addLayer({
       id: 'place-labels',
       type: 'symbol',
@@ -903,7 +1071,6 @@
       maxzoom: 14
     });
 
-    // Изначально слой скрыт
     map.setLayoutProperty('place-labels', 'visibility', 'none');
 
     map.addSource('drones-src', {
@@ -929,7 +1096,6 @@
       }
     });
 
-    // Сохраняем кастомные маркеры
     places.forEach(place => {
       const el = document.createElement('div');
       el.className = `place-label ${place.size}`;
@@ -1013,24 +1179,41 @@
       }
     }, { passive: false, capture: true });
 
-    // ===== Обработка тумблера =====
     const toggleMapLabels = document.getElementById('toggle-map-labels');
     toggleMapLabels.addEventListener('change', () => {
       const showMapLabels = toggleMapLabels.checked;
       if (showMapLabels) {
-        // Скрыть кастомные
         customPlaceMarkers.forEach(m => m.remove());
-        // Показать слой с карты
         map.setLayoutProperty('place-labels', 'visibility', 'visible');
       } else {
-        // Показать кастомные
         customPlaceMarkers.forEach(m => {
           m.addTo(map);
         });
-        // Скрыть слой с карты
         map.setLayoutProperty('place-labels', 'visibility', 'none');
       }
     });
+
+    // Управление насыщенностью карты
+    const saturationSlider = document.getElementById('saturation-slider');
+    const saturationValue = document.getElementById('saturation-value');
+
+    function setMapSaturation(val) {
+      const normalizedSat = parseFloat(val) / 100;
+      saturationValue.textContent = `${val > 0 ? '+' : ''}${val}%`;
+      
+      if (map.getLayer('google-satellite-layer')) {
+        map.setPaintProperty('google-satellite-layer', 'raster-saturation', normalizedSat);
+      }
+      if (map.getLayer('esri-satellite-layer')) {
+        map.setPaintProperty('esri-satellite-layer', 'raster-saturation', normalizedSat);
+      }
+    }
+
+    saturationSlider.addEventListener('input', (e) => {
+      setMapSaturation(e.target.value);
+    });
+
+    setMapSaturation(saturationSlider.value);
   });
 
   async function ensureImageLoaded(fileName) {
@@ -1154,17 +1337,18 @@
     const uiPanel = document.getElementById('ui-panel');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsMenu = document.getElementById('settings-menu');
+    const legendPanel = document.querySelector('.legend-panel');
     const toast = document.getElementById('toast');
     const oldPanelDisplay = uiPanel.style.display;
     const oldSettingsBtnDisplay = settingsBtn.style.display;
     const oldSettingsMenuDisplay = settingsMenu.style.display;
-    const labelToggle = document.getElementById('toggle-map-labels');
+    const oldLegendDisplay = legendPanel.style.display;
     const oldMapLabelsVisibility = map.getLayoutProperty('place-labels', 'visibility');
 
-    // Убираем интерфейс на время выбора, но не меняем положение/масштаб карты.
     uiPanel.style.display = 'none';
     settingsBtn.style.display = 'none';
     settingsMenu.style.display = 'none';
+    legendPanel.style.display = 'none'; // Скрываем HTML-легенду на момент захвата
 
     const layer = document.createElement('div');
     layer.id = 'screenshot-selection-layer';
@@ -1185,6 +1369,7 @@
       uiPanel.style.display = oldPanelDisplay;
       settingsBtn.style.display = oldSettingsBtnDisplay;
       settingsMenu.style.display = oldSettingsMenuDisplay;
+      legendPanel.style.display = oldLegendDisplay;
       map.setLayoutProperty('place-labels', 'visibility', oldMapLabelsVisibility || 'none');
     };
 
@@ -1246,8 +1431,6 @@
       let originalPixelRatio = null;
       let highResolutionRenderEnabled = false;
       try {
-        // Перерисовываем карту в повышенном pixel ratio ДО захвата, а не растягиваем
-        // маленький готовый кадр. Это повышает чёткость векторных объектов и подписей.
         map.setLayoutProperty('place-labels', 'visibility', 'none');
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
@@ -1256,9 +1439,6 @@
         originalPixelRatio = initialCanvas.width / Math.max(1, initialRect.width);
         const scale = Math.min(4, 3840 / Math.max(width, height));
 
-        // Ограничиваем размер WebGL canvas, чтобы не упереться в лимит видеокарты.
-        // На большинстве компьютеров это позволяет рендерить всю карту минимум в 2x,
-        // а выделенную область сохранять до 3840 px по длинной стороне.
         if (typeof map.setPixelRatio === 'function') {
           const maxCanvasSide = 8192;
           const safeRatio = Math.min(
@@ -1297,9 +1477,10 @@
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(mapCanvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
 
-        // Всегда используем кастомные названия Н.П., независимо от положения переключателя.
         ctx.save();
         ctx.scale(scale, scale);
+        
+        // Отрисовка названий Н.П.
         places.forEach(place => {
           const point = map.project(place.coords);
           const x = point.x + canvasRect.left - left;
@@ -1319,6 +1500,134 @@
           if ('letterSpacing' in ctx) ctx.letterSpacing = `${letterSpacing}px`;
           ctx.fillText(place.name, x, y);
         });
+
+        // ===== Отрисовка НАСТОЯЩЕГО Liquid Glass с размытием фона на Canvas =====
+        const loadCanvasImage = (src) => {
+          return new Promise((res) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => res(img);
+            img.onerror = () => res(null);
+            img.src = src;
+          });
+        };
+
+        const imgNew1 = await loadCanvasImage('icons/new1.png');
+        const imgNew2 = await loadCanvasImage('icons/new2.png');
+
+        const legendX = 15;
+        const legendWidth = 235;
+        const legendHeight = 92;
+        const legendY = height - legendHeight - 20;
+        const radius = 24;
+
+        ctx.save();
+
+        // 1. Создаем путь скругленной панели
+        const createGlassPath = (c) => {
+          c.beginPath();
+          if (typeof c.roundRect === 'function') {
+            c.roundRect(legendX, legendY, legendWidth, legendHeight, radius);
+          } else {
+            c.rect(legendX, legendY, legendWidth, legendHeight);
+          }
+          c.closePath();
+        };
+
+        // 2. Внешняя глубокая тень капли
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+        ctx.shadowBlur = 30;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 12;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        createGlassPath(ctx);
+        ctx.fill();
+        ctx.restore();
+
+        // 3. РАЗМЫТИЕ ФОНА КАРТЫ ПОД ПАНЕЛЬЮ (Честный Glassmorphism/Liquid Blur)
+        ctx.save();
+        createGlassPath(ctx);
+        ctx.clip(); // Обрезаем по форме плашки
+
+        // Вырезаем изображение карты под плашкой
+        const bgPattern = document.createElement('canvas');
+        bgPattern.width = legendWidth;
+        bgPattern.height = legendHeight;
+        const pCtx = bgPattern.getContext('2d');
+        pCtx.drawImage(out, legendX * scale, legendY * scale, legendWidth * scale, legendHeight * scale, 0, 0, legendWidth, legendHeight);
+
+        // Применяем сильное размытие и осветление/насыщенность
+        ctx.filter = 'blur(10px) brightness(1.15) saturate(140%)';
+        ctx.drawImage(bgPattern, legendX, legendY, legendWidth, legendHeight);
+        ctx.filter = 'none';
+
+        // Полупрозрачная тонировка стекла
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.fill();
+
+        // Верхний глянцевый блик (линзовое заломление)
+        const glossGrad = ctx.createLinearGradient(0, legendY, 0, legendY + legendHeight * 0.5);
+        glossGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+        glossGrad.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
+        glossGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = glossGrad;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(legendX + 1, legendY + 1, legendWidth - 2, legendHeight * 0.48, [radius, radius, 12, 12]);
+        } else {
+          ctx.rect(legendX + 1, legendY + 1, legendWidth - 2, legendHeight * 0.48);
+        }
+        ctx.fill();
+
+        // Внутренние световые блики по краям
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 1.2;
+        createGlassPath(ctx);
+        ctx.stroke();
+
+        ctx.restore(); // Снимаем clip()
+
+        // 4. Отрисовка текста и икон
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '600 10.5px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetY = 1;
+        ctx.fillText('Дані беруться з відкритих джерел', legendX + 14, legendY + 12);
+        ctx.fillText('та наносяться вручну', legendX + 14, legendY + 26);
+
+        // Разделительная каемка
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(legendX + 14, legendY + 44);
+        ctx.lineTo(legendX + legendWidth - 14, legendY + 44);
+        ctx.stroke();
+
+        // Шахед
+        if (imgNew1) {
+          ctx.shadowColor = 'rgba(0,0,0,0.6)';
+          ctx.shadowBlur = 4;
+          ctx.drawImage(imgNew1, legendX + 14, legendY + 50, 18, 18);
+        }
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Шахед', legendX + 40, legendY + 59);
+
+        // Реактивний
+        if (imgNew2) {
+          ctx.shadowColor = 'rgba(0,0,0,0.6)';
+          ctx.shadowBlur = 4;
+          ctx.drawImage(imgNew2, legendX + 14, legendY + 70, 18, 18);
+        }
+        ctx.fillText('Реактивний', legendX + 40, legendY + 79);
+
+        ctx.restore();
         ctx.restore();
 
         const blob = await new Promise(resolve => out.toBlob(resolve, 'image/png'));
@@ -1351,7 +1660,6 @@
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       } finally {
-        // Возвращаем обычную производительность карты после скриншота.
         if (highResolutionRenderEnabled && originalPixelRatio !== null && typeof map.setPixelRatio === 'function') {
           try {
             map.setPixelRatio(originalPixelRatio);
@@ -1371,7 +1679,6 @@
     document.addEventListener('keydown', onKeyDown);
   }
 
-  // ===== Настройки: открытие/закрытие меню =====
   const settingsBtn = document.getElementById('settings-btn');
   const settingsMenu = document.getElementById('settings-menu');
 
@@ -1381,7 +1688,6 @@
     settingsMenu.classList.toggle('open');
   });
 
-  // Закрытие при клике вне меню
   document.addEventListener('click', (e) => {
     if (!settingsMenu.contains(e.target) && !settingsBtn.contains(e.target)) {
       settingsMenu.classList.remove('open');
