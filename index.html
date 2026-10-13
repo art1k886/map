@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Шосткинский район и регионы</title>
   
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
@@ -20,6 +20,7 @@
       background-color: #121212;
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow: hidden;
+      touch-action: manipulation;
     }
     
     #map {
@@ -80,12 +81,20 @@
       max-height: calc(100vh - 20px);
       overflow-y: auto;
       box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      transition: max-height 0.3s ease;
     }
 
     .controls-panel::-webkit-scrollbar { width: 4px; }
     .controls-panel::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .controls-panel {
+        width: calc(100% - 70px);
+        max-height: 50vh;
+      }
     }
 
     .panel-section {
@@ -112,7 +121,7 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 6px;
-      padding: 5px 6px;
+      padding: 6px;
       color: #e2e8f0;
       display: flex;
       align-items: center;
@@ -121,6 +130,7 @@
       transition: all 0.2s ease;
       font-size: 10px;
       font-weight: 600;
+      touch-action: manipulation;
     }
 
     .icon-btn:hover {
@@ -156,7 +166,7 @@
       align-items: center;
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.04);
-      padding: 5px 6px;
+      padding: 6px;
       border-radius: 5px;
       font-size: 10px;
       color: #f1f5f9;
@@ -197,7 +207,7 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #e2e8f0;
       border-radius: 5px;
-      padding: 4px 6px;
+      padding: 6px 8px;
       font-size: 9px;
       font-weight: 600;
       cursor: pointer;
@@ -208,7 +218,7 @@
       border: none;
       color: white;
       border-radius: 5px;
-      padding: 4px 6px;
+      padding: 6px 8px;
       font-size: 9px;
       font-weight: 700;
       cursor: pointer;
@@ -227,35 +237,35 @@
       bottom: 20px;
       left: 15px;
       z-index: 1000;
-      
-      /* Полуупрозрачная линзовая подложка */
       background: rgba(255, 255, 255, 0.07);
       backdrop-filter: blur(16px) saturate(160%);
       -webkit-backdrop-filter: blur(16px) saturate(160%);
-      
-      /* Мягкие обтекаемые края капли */
       border-radius: 24px;
       border: 1px solid rgba(255, 255, 255, 0.35);
       padding: 12px 16px;
-      
       display: flex;
       flex-direction: column;
       gap: 10px;
-      
-      /* Сложные внутренние и внешние тени для объема */
       box-shadow: 
         0 15px 35px rgba(0, 0, 0, 0.5),
         inset 0 2px 3px rgba(255, 255, 255, 0.8),
         inset 0 8px 18px rgba(255, 255, 255, 0.25),
         inset 0 -6px 14px rgba(0, 0, 0, 0.3),
         inset 0 -1px 2px rgba(0, 0, 0, 0.4);
-
       pointer-events: none;
       user-select: none;
       overflow: hidden;
     }
 
-    /* Верхний глянцевый блик */
+    @media (max-width: 600px) {
+      .legend-panel {
+        bottom: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        border-radius: 16px;
+      }
+    }
+
     .legend-panel::before {
       content: '';
       position: absolute;
@@ -342,7 +352,7 @@
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 6px;
+      padding: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -356,13 +366,13 @@
       background: #ef4444;
       color: white;
       border: none;
-      width: 16px; height: 16px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 9px;
+      font-size: 10px;
       font-weight: bold;
     }
 
@@ -690,7 +700,12 @@
   let loadedImages = new Set();
   let draggedFeatureId = null;
   let hoveredDroneId = null;
-  let customPlaceMarkers = []; // Храним кастомные маркеры для скрытия/показа
+  let customPlaceMarkers = []; 
+
+  // Сенсорное управление
+  let touchActiveDroneId = null;
+  let initialTouchAngle = 0;
+  let initialDroneRotation = 0;
 
   const places = [
     { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
@@ -1150,6 +1165,78 @@
       hoveredDroneId = null;
     });
 
+    /* ========================================================
+       Управление жестами для телефонов (Touch Gestures)
+       ======================================================== */
+    const canvas = map.getCanvas();
+
+    function getTouchAngle(t1, t2) {
+      return Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * (180 / Math.PI);
+    }
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        const point = [touch.clientX, touch.clientY];
+        const bbox = [[point[0] - 20, point[1] - 20], [point[0] + 20, point[1] + 20]];
+        const features = map.queryRenderedFeatures(bbox, { layers: ['drones-layer'] });
+
+        if (features.length > 0) {
+          touchActiveDroneId = features[0].properties.id;
+          map.dragPan.disable();
+        }
+      } else if (e.touches.length === 2 && touchActiveDroneId) {
+        // Захватываем угол при касании двумя пальцами для вращения
+        e.preventDefault();
+        map.dragPan.disable();
+        map.touchZoomRotate.disable();
+
+        const feat = activeFeatures.find(f => f.properties.id === touchActiveDroneId);
+        if (feat) {
+          initialTouchAngle = getTouchAngle(e.touches[0], e.touches[1]);
+          initialDroneRotation = feat.properties.rotation || 0;
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!touchActiveDroneId) return;
+
+      if (e.touches.length === 1) {
+        // Перетаскивание одним пальцем
+        e.preventDefault();
+        const touch = e.touches[0];
+        const lngLat = map.unproject([touch.clientX, touch.clientY]);
+        const feat = activeFeatures.find(f => f.properties.id === touchActiveDroneId);
+        if (feat) {
+          feat.geometry.coordinates = [lngLat.lng, lngLat.lat];
+          updateGeoJSON();
+        }
+      } else if (e.touches.length === 2) {
+        // Вращение двумя пальцами
+        e.preventDefault();
+        const currentAngle = getTouchAngle(e.touches[0], e.touches[1]);
+        const angleDiff = currentAngle - initialTouchAngle;
+
+        const feat = activeFeatures.find(f => f.properties.id === touchActiveDroneId);
+        if (feat) {
+          feat.properties.rotation = (initialDroneRotation + angleDiff) % 360;
+          updateGeoJSON();
+        }
+      }
+    }, { passive: false });
+
+    const endTouch = () => {
+      if (touchActiveDroneId) {
+        touchActiveDroneId = null;
+        map.dragPan.enable();
+        map.touchZoomRotate.enable();
+      }
+    };
+
+    canvas.addEventListener('touchend', endTouch);
+    canvas.addEventListener('touchcancel', endTouch);
+
     window.addEventListener('keydown', (e) => {
       if (!hoveredDroneId) return;
       const key = e.key.toLowerCase();
@@ -1357,7 +1444,7 @@
     uiPanel.style.display = 'none';
     settingsBtn.style.display = 'none';
     settingsMenu.style.display = 'none';
-    legendPanel.style.display = 'none'; // Скрываем HTML-легенду на момент захвата
+    legendPanel.style.display = 'none';
 
     const layer = document.createElement('div');
     layer.id = 'screenshot-selection-layer';
@@ -1365,7 +1452,7 @@
     rect.id = 'screenshot-selection-rect';
     const hint = document.createElement('div');
     hint.id = 'screenshot-selection-hint';
-    hint.textContent = 'Зажми ЛКМ и выдели область • Esc — отмена';
+    hint.textContent = 'Зажми и выдели область • Esc / касание двумя пальцами — отмена';
     layer.append(rect, hint);
     document.body.appendChild(layer);
 
@@ -1406,7 +1493,7 @@
       document.removeEventListener('keydown', onKeyDown);
     };
     const onPointerDown = (e) => {
-      if (e.button !== 0 || finished) return;
+      if (finished) return;
       e.preventDefault();
       dragging = true;
       startX = currentX = e.clientX;
@@ -1420,7 +1507,7 @@
       drawRect();
     };
     const onPointerUp = async (e) => {
-      if (!dragging || finished || e.button !== 0) return;
+      if (!dragging || finished) return;
       dragging = false;
       currentX = e.clientX;
       currentY = e.clientY;
@@ -1510,7 +1597,6 @@
           ctx.fillText(place.name, x, y);
         });
 
-        // ===== Отрисовка НАСТОЯЩЕГО Liquid Glass с размытием фона на Canvas =====
         const loadCanvasImage = (src) => {
           return new Promise((res) => {
             const img = new Image();
@@ -1532,7 +1618,6 @@
 
         ctx.save();
 
-        // 1. Создаем путь скругленной панели
         const createGlassPath = (c) => {
           c.beginPath();
           if (typeof c.roundRect === 'function') {
@@ -1543,7 +1628,6 @@
           c.closePath();
         };
 
-        // 2. Внешняя глубокая тень капли
         ctx.save();
         ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
         ctx.shadowBlur = 30;
@@ -1554,28 +1638,23 @@
         ctx.fill();
         ctx.restore();
 
-        // 3. РАЗМЫТИЕ ФОНА КАРТЫ ПОД ПАНЕЛЬЮ (Честный Glassmorphism/Liquid Blur)
         ctx.save();
         createGlassPath(ctx);
-        ctx.clip(); // Обрезаем по форме плашки
+        ctx.clip();
 
-        // Вырезаем изображение карты под плашкой
         const bgPattern = document.createElement('canvas');
         bgPattern.width = legendWidth;
         bgPattern.height = legendHeight;
         const pCtx = bgPattern.getContext('2d');
         pCtx.drawImage(out, legendX * scale, legendY * scale, legendWidth * scale, legendHeight * scale, 0, 0, legendWidth, legendHeight);
 
-        // Применяем сильное размытие и осветление/насыщенность
         ctx.filter = 'blur(10px) brightness(1.15) saturate(140%)';
         ctx.drawImage(bgPattern, legendX, legendY, legendWidth, legendHeight);
         ctx.filter = 'none';
 
-        // Полупрозрачная тонировка стекла
         ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.fill();
 
-        // Верхний глянцевый блик (линзовое заломление)
         const glossGrad = ctx.createLinearGradient(0, legendY, 0, legendY + legendHeight * 0.5);
         glossGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
         glossGrad.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
@@ -1590,15 +1669,13 @@
         }
         ctx.fill();
 
-        // Внутренние световые блики по краям
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
         ctx.lineWidth = 1.2;
         createGlassPath(ctx);
         ctx.stroke();
 
-        ctx.restore(); // Снимаем clip()
+        ctx.restore();
 
-        // 4. Отрисовка текста и икон
         ctx.fillStyle = '#ffffff';
         ctx.font = '600 10.5px "Plus Jakarta Sans", sans-serif';
         ctx.textAlign = 'left';
@@ -1609,7 +1686,6 @@
         ctx.fillText('Дані беруться з відкритих джерел', legendX + 14, legendY + 12);
         ctx.fillText('та наносяться вручну', legendX + 14, legendY + 26);
 
-        // Разделительная каемка
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -1617,7 +1693,6 @@
         ctx.lineTo(legendX + legendWidth - 14, legendY + 44);
         ctx.stroke();
 
-        // Шахед
         if (imgNew1) {
           ctx.shadowColor = 'rgba(0,0,0,0.6)';
           ctx.shadowBlur = 4;
@@ -1628,7 +1703,6 @@
         ctx.textBaseline = 'middle';
         ctx.fillText('Шахед', legendX + 40, legendY + 59);
 
-        // Реактивний
         if (imgNew2) {
           ctx.shadowColor = 'rgba(0,0,0,0.6)';
           ctx.shadowBlur = 4;
