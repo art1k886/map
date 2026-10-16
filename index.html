@@ -231,87 +231,63 @@
       padding: 8px 0;
     }
 
+    /* Стиль белой карточки-дисклеймера под пример на фото */
     .legend-panel {
       position: absolute;
       bottom: 20px;
       left: 15px;
       z-index: 1000;
-      background: rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        inset 0 2px 3px rgba(255, 255, 255, 0.8),
-        inset 0 8px 18px rgba(255, 255, 255, 0.25),
-        inset 0 -6px 14px rgba(0, 0, 0, 0.3),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
       pointer-events: none;
       user-select: none;
-      overflow: hidden;
+      max-width: 320px;
+      transition: opacity 0.2s ease;
     }
 
     @media (max-width: 600px) {
       .legend-panel {
         bottom: 10px;
         left: 10px;
-        padding: 8px 12px;
-        border-radius: 16px;
+        padding: 8px 10px;
+        max-width: 280px;
       }
     }
 
-    .legend-panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 45%;
-      background: linear-gradient(
-        180deg, 
-        rgba(255, 255, 255, 0.3) 0%, 
-        rgba(255, 255, 255, 0.05) 75%, 
-        transparent 100%
-      );
-      border-radius: 24px 24px 80px 80px / 24px 24px 15px 15px;
-      pointer-events: none;
-    }
-
     .disclaimer-text {
-      color: #e2e8f0;
-      font-size: 10.5px;
-      font-weight: 600;
+      color: #1a1a1a;
+      font-size: 11.5px;
+      font-weight: 700;
       line-height: 1.35;
-      max-width: 230px;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+      white-space: pre-wrap;
     }
 
     .legend-items {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      padding-top: 8px;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      padding-top: 4px;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 700;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+      gap: 6px;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .legend-item img {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
 
     #screenshot-selection-layer {
@@ -628,13 +604,6 @@
       pointer-events: none;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
     }
-
-    .settings-hint {
-      color: #64748b;
-      font-size: 9px;
-      font-weight: 500;
-      line-height: 1.3;
-    }
   </style>
 </head>
 <body>
@@ -650,6 +619,33 @@
 </button>
 
 <div class="settings-menu" id="settings-menu">
+  <div class="settings-group">
+    <div class="settings-group-title">Дисклеймер</div>
+    <div class="settings-row">
+      <div class="settings-label">Показать дисклеймер</div>
+      <label class="toggle">
+        <input type="checkbox" id="disclaimer-enabled" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">Текст дисклеймера</div>
+      <textarea id="disclaimer-text-input" class="text-input" rows="3" style="resize: vertical; min-height: 50px;">Мапа не є військовою. Усі дані взяті з відкритих телеграм-каналів і можуть бути неточними.</textarea>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Прозрачность
+        <small>Насколько прозрачна белая плашка</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="disclaimer-opacity-slider" class="range-slider" min="10" max="100" value="95">
+        <span class="range-value" id="disclaimer-opacity-value">95%</span>
+      </div>
+    </div>
+  </div>
+
   <div class="settings-group">
     <div class="settings-group-title">Карта</div>
     <div class="settings-row">
@@ -756,10 +752,10 @@
   <div class="panel-section">
     <div class="panel-title">Новые иконки</div>
     <div class="icons-grid">
-      <button class="icon-btn" onclick="addIconMarker('new1.png', 'Шахед (new)')">
+      <button class="icon-btn" onclick="addIconMarker('new1.png', 'Шахед')">
         <img src="icons/new1.png" alt="Шахед"> Шахед
       </button>
-      <button class="icon-btn" onclick="addIconMarker('new2.png', 'Реактивний (new)')">
+      <button class="icon-btn" onclick="addIconMarker('new2.png', 'Реактивний')">
         <img src="icons/new2.png" alt="Реактивный"> Реактивный
       </button>
       <button class="icon-btn" onclick="addIconMarker('banderola.png', 'Бандероль')">
@@ -829,18 +825,9 @@
   </button>
 </div>
 
-<div class="legend-panel">
-  <div class="disclaimer-text">Дані беруться з відкритих джерел та наносяться вручну</div>
-  <div class="legend-items">
-    <div class="legend-item">
-      <img src="icons/new1.png" alt="Шахед / БпЛА">
-      <span>Шахед</span>
-    </div>
-    <div class="legend-item">
-      <img src="icons/new2.png" alt="Реактивний / Бандероль">
-      <span>Реактивний</span>
-    </div>
-  </div>
+<div class="legend-panel" id="legend-panel">
+  <div class="disclaimer-text" id="disclaimer-text-view">Мапа не є військовою. Усі дані взяті з відкритих телеграм-каналів і можуть бути неточними.</div>
+  <div class="legend-items" id="legend-items-view"></div>
 </div>
 
 <div id="toast" class="toast">Скриншот района скопирован в буфер обмена!</div>
@@ -849,7 +836,7 @@
   const SHOSTKA_CENTER = [33.4729, 51.8638];
   const TARGET_ZOOM = 9.3;
 
-  const STORAGE_KEY = 'shostka_map_settings_v1';
+  const STORAGE_KEY = 'shostka_map_settings_v2';
 
   let activeFeatures = [];
   let markerCounters = {};
@@ -861,6 +848,15 @@
   let touchActiveDroneId = null;
   let initialTouchAngle = 0;
   let initialDroneRotation = 0;
+
+  // Дисклеймер UI
+  const disclaimerEnabled = document.getElementById('disclaimer-enabled');
+  const disclaimerTextInput = document.getElementById('disclaimer-text-input');
+  const disclaimerOpacitySlider = document.getElementById('disclaimer-opacity-slider');
+  const disclaimerOpacityValue = document.getElementById('disclaimer-opacity-value');
+  const legendPanel = document.getElementById('legend-panel');
+  const disclaimerTextView = document.getElementById('disclaimer-text-view');
+  const legendItemsView = document.getElementById('legend-items-view');
 
   // Глобальные ссылки на элементы настроек водяного знака и карты
   const toggleMapLabels = document.getElementById('toggle-map-labels');
@@ -881,6 +877,11 @@
   const watermarkAngleValue = document.getElementById('watermark-angle-value');
 
   const defaultSettings = {
+    disclaimer: {
+      enabled: true,
+      text: 'Мапа не є військовою. Усі дані взяті з відкритих телеграм-каналів і можуть бути неточними.',
+      opacity: 95
+    },
     mapLabels: false,
     saturation: -100,
     townsBrightness: 95,
@@ -903,6 +904,7 @@
       return {
         ...defaultSettings,
         ...parsed,
+        disclaimer: { ...defaultSettings.disclaimer, ...(parsed.disclaimer || {}) },
         watermark: { ...defaultSettings.watermark, ...(parsed.watermark || {}) }
       };
     } catch (e) {
@@ -914,6 +916,11 @@
   function saveSettings() {
     try {
       const settings = {
+        disclaimer: {
+          enabled: disclaimerEnabled.checked,
+          text: disclaimerTextInput.value,
+          opacity: parseInt(disclaimerOpacitySlider.value, 10)
+        },
         mapLabels: toggleMapLabels.checked,
         saturation: parseInt(saturationSlider.value, 10),
         townsBrightness: parseInt(townsBrightnessSlider.value, 10),
@@ -1171,6 +1178,46 @@
 
   const watermarkLayer = document.getElementById('watermark-layer');
 
+  function renderDisclaimerPanel(featuresInBox = null) {
+    const enabled = disclaimerEnabled.checked;
+    if (!enabled) {
+      legendPanel.style.display = 'none';
+      return;
+    }
+    legendPanel.style.display = 'flex';
+    legendPanel.style.opacity = (parseInt(disclaimerOpacitySlider.value, 10) / 100).toString();
+    disclaimerTextView.textContent = disclaimerTextInput.value;
+
+    // Определяем, какие объекты отрисовывать
+    const sourceList = featuresInBox !== null ? featuresInBox : activeFeatures;
+
+    // Группируем по уникальным типам/иконкам
+    const uniqueTypes = new Map();
+    sourceList.forEach(f => {
+      const typeName = f.properties.typeName || f.properties.title.replace(/\s+\d+$/, '');
+      const fileName = f.properties.fileName;
+      if (!uniqueTypes.has(typeName)) {
+        uniqueTypes.set(typeName, fileName);
+      }
+    });
+
+    legendItemsView.innerHTML = '';
+    if (uniqueTypes.size === 0) {
+      legendItemsView.style.display = 'none';
+    } else {
+      legendItemsView.style.display = 'flex';
+      uniqueTypes.forEach((fileName, typeName) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `
+          <img src="icons/${fileName}" alt="${typeName}">
+          <span>${typeName}</span>
+        `;
+        legendItemsView.appendChild(item);
+      });
+    }
+  }
+
   function setMapSaturation(val) {
     const normalizedSat = parseFloat(val) / 100;
     saturationValue.textContent = `${val > 0 ? '+' : ''}${val}%`;
@@ -1245,6 +1292,12 @@
   }
 
   function applySettings(s) {
+    disclaimerEnabled.checked = s.disclaimer.enabled;
+    disclaimerTextInput.value = s.disclaimer.text;
+    disclaimerOpacitySlider.value = s.disclaimer.opacity;
+    disclaimerOpacityValue.textContent = s.disclaimer.opacity + '%';
+    renderDisclaimerPanel();
+
     toggleMapLabels.checked = s.mapLabels;
     
     saturationSlider.value = s.saturation;
@@ -1627,6 +1680,23 @@
 
     applySettings(savedSettings);
 
+    // События настроек дисклеймера
+    disclaimerEnabled.addEventListener('change', () => {
+      renderDisclaimerPanel();
+      saveSettings();
+    });
+
+    disclaimerTextInput.addEventListener('input', () => {
+      renderDisclaimerPanel();
+      saveSettings();
+    });
+
+    disclaimerOpacitySlider.addEventListener('input', (e) => {
+      disclaimerOpacityValue.textContent = e.target.value + '%';
+      renderDisclaimerPanel();
+      saveSettings();
+    });
+
     toggleMapLabels.addEventListener('change', () => {
       const showMapLabels = toggleMapLabels.checked;
       if (showMapLabels) {
@@ -1730,6 +1800,7 @@
       properties: {
         id: id,
         title: title,
+        typeName: typeName,
         fileName: fileName,
         iconImage: fileName,
         rotation: 0,
@@ -1740,6 +1811,7 @@
     activeFeatures.push(newFeature);
     updateGeoJSON();
     updateUIList();
+    renderDisclaimerPanel();
   }
 
   function updateGeoJSON() {
@@ -1756,6 +1828,7 @@
     activeFeatures = activeFeatures.filter(f => f.properties.id !== id);
     updateGeoJSON();
     updateUIList();
+    renderDisclaimerPanel();
   }
 
   function updateUIList() {
@@ -1808,6 +1881,7 @@
     activeFeatures = activeFeatures.filter(f => !f.properties.checked);
     updateGeoJSON();
     updateUIList();
+    renderDisclaimerPanel();
   }
 
   async function takeScreenshot() {
@@ -1816,7 +1890,6 @@
     const uiPanel = document.getElementById('ui-panel');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsMenu = document.getElementById('settings-menu');
-    const legendPanel = document.querySelector('.legend-panel');
     const toast = document.getElementById('toast');
     const oldPanelDisplay = uiPanel.style.display;
     const oldSettingsBtnDisplay = settingsBtn.style.display;
@@ -1849,6 +1922,7 @@
       settingsBtn.style.display = oldSettingsBtnDisplay;
       settingsMenu.style.display = oldSettingsMenuDisplay;
       legendPanel.style.display = oldLegendDisplay;
+      renderDisclaimerPanel();
       map.setLayoutProperty('place-labels', 'visibility', oldMapLabelsVisibility || 'none');
     };
 
@@ -1907,6 +1981,15 @@
         return;
       }
 
+      // Находим, какие БПЛА попали в рамку кадра
+      const canvasRect = map.getCanvas().getBoundingClientRect();
+      const featuresInBox = activeFeatures.filter(f => {
+        const pt = map.project(f.geometry.coordinates);
+        const screenX = pt.x + canvasRect.left;
+        const screenY = pt.y + canvasRect.top;
+        return screenX >= left && screenX <= left + width && screenY >= top && screenY <= top + height;
+      });
+
       let originalPixelRatio = null;
       let highResolutionRenderEnabled = false;
       try {
@@ -1941,11 +2024,11 @@
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
         const mapCanvas = map.getCanvas();
-        const canvasRect = mapCanvas.getBoundingClientRect();
-        const dprX = mapCanvas.width / Math.max(1, canvasRect.width);
-        const dprY = mapCanvas.height / Math.max(1, canvasRect.height);
-        const sx = Math.max(0, Math.round((left - canvasRect.left) * dprX));
-        const sy = Math.max(0, Math.round((top - canvasRect.top) * dprY));
+        const mapCanvasRect = mapCanvas.getBoundingClientRect();
+        const dprX = mapCanvas.width / Math.max(1, mapCanvasRect.width);
+        const dprY = mapCanvas.height / Math.max(1, mapCanvasRect.height);
+        const sx = Math.max(0, Math.round((left - mapCanvasRect.left) * dprX));
+        const sy = Math.max(0, Math.round((top - mapCanvasRect.top) * dprY));
         const sw = Math.max(1, Math.min(Math.round(width * dprX), mapCanvas.width - sx));
         const sh = Math.max(1, Math.min(Math.round(height * dprY), mapCanvas.height - sy));
         const out = document.createElement('canvas');
@@ -1959,6 +2042,7 @@
         ctx.save();
         ctx.scale(scale, scale);
 
+        // Отрисовка водяных знаков
         if (watermarkEnabled.checked) {
           try {
             const wmText = (watermarkText.value.trim() || 'ШОСТКА • ОГЛЯД');
@@ -2008,10 +2092,11 @@
           }
         }
 
+        // Отрисовка названий городов
         places.forEach(place => {
           const point = map.project(place.coords);
-          const x = point.x + canvasRect.left - left;
-          const y = point.y + canvasRect.top - top;
+          const x = point.x + mapCanvasRect.left - left;
+          const y = point.y + mapCanvasRect.top - top;
           if (x < -180 || y < -30 || x > width + 180 || y > height + 30) return;
           let fontSize = 10, weight = 600, letterSpacing = 0, shadowBlur = 2;
           if (place.size === 'large') { fontSize = 13; weight = 800; letterSpacing = 0.4; shadowBlur = 6; }
@@ -2028,124 +2113,140 @@
           ctx.fillText(place.name, x, y);
         });
 
-        const loadCanvasImage = (src) => {
-          return new Promise((res) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => res(img);
-            img.onerror = () => res(null);
-            img.src = src;
+        // Отрисовка белой карточки дисклеймера (в стиле фото)
+        if (disclaimerEnabled.checked) {
+          const loadCanvasImage = (src) => {
+            return new Promise((res) => {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => res(img);
+              img.onerror = () => res(null);
+              img.src = src;
+            });
+          };
+
+          // Формируем список уникальных типов БПЛА из попавших в рамку
+          const uniqueTypesMap = new Map();
+          featuresInBox.forEach(f => {
+            const typeName = f.properties.typeName || f.properties.title.replace(/\s+\d+$/, '');
+            const fileName = f.properties.fileName;
+            if (!uniqueTypesMap.has(typeName)) {
+              uniqueTypesMap.set(typeName, fileName);
+            }
           });
-        };
 
-        const imgNew1 = await loadCanvasImage('icons/new1.png');
-        const imgNew2 = await loadCanvasImage('icons/new2.png');
+          const discText = disclaimerTextInput.value.trim() || 'Мапа не є військовою. Усі дані взяті з відкритих телеграм-каналів і можуть бути неточними.';
+          const discOpacity = parseInt(disclaimerOpacitySlider.value, 10) / 100;
 
-        const legendX = 15;
-        const legendWidth = 235;
-        const legendHeight = 92;
-        const legendY = height - legendHeight - 20;
-        const radius = 24;
-
-        ctx.save();
-
-        const createGlassPath = (c) => {
-          c.beginPath();
-          if (typeof c.roundRect === 'function') {
-            c.roundRect(legendX, legendY, legendWidth, legendHeight, radius);
-          } else {
-            c.rect(legendX, legendY, legendWidth, legendHeight);
+          const padding = 12;
+          const discWidth = Math.min(320, width - 20);
+          
+          ctx.save();
+          ctx.font = '700 11.5px "Plus Jakarta Sans", sans-serif';
+          
+          // 1. Разбивка текста дисклеймера на строки
+          const words = discText.split(' ');
+          let lines = [];
+          let currentLine = words[0] || '';
+          for (let i = 1; i < words.length; i++) {
+            const testLine = currentLine + ' ' + words[i];
+            if (ctx.measureText(testLine).width > discWidth - padding * 2) {
+              lines.push(currentLine);
+              currentLine = words[i];
+            } else {
+              currentLine = testLine;
+            }
           }
-          c.closePath();
-        };
+          if (currentLine) lines.push(currentLine);
 
-        ctx.save();
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
-        ctx.shadowBlur = 30;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 12;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        createGlassPath(ctx);
-        ctx.fill();
-        ctx.restore();
+          const lineHeight = 16;
+          const textBlockHeight = lines.length * lineHeight;
 
-        ctx.save();
-        createGlassPath(ctx);
-        ctx.clip();
+          // 2. Предварительный расчёт строк для иконок (чтобы узнать точную высоту плашки)
+          ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
+          const itemsLayout = [];
+          let currentRow = [];
+          let currentX = 0;
+          const maxX = discWidth - padding * 2;
+          const gapBetweenItems = 12;
 
-        const bgPattern = document.createElement('canvas');
-        bgPattern.width = legendWidth;
-        bgPattern.height = legendHeight;
-        const pCtx = bgPattern.getContext('2d');
-        pCtx.drawImage(out, legendX * scale, legendY * scale, legendWidth * scale, legendHeight * scale, 0, 0, legendWidth, legendHeight);
+          for (const [typeName, fileName] of uniqueTypesMap.entries()) {
+            const itemWidth = 20 + 4 + ctx.measureText(typeName).width; // иконка + отступ + текст
+            if (currentRow.length > 0 && currentX + itemWidth > maxX) {
+              itemsLayout.push(currentRow);
+              currentRow = [];
+              currentX = 0;
+            }
+            currentRow.push({ typeName, fileName, width: itemWidth });
+            currentX += itemWidth + gapBetweenItems;
+          }
+          if (currentRow.length > 0) {
+            itemsLayout.push(currentRow);
+          }
 
-        try {
-          ctx.filter = 'blur(10px) brightness(1.15) saturate(140%)';
-        } catch (e) {
-          ctx.filter = 'none';
+          const rowHeight = 24;
+          const iconBlockHeight = itemsLayout.length * rowHeight;
+          const discHeight = padding * 2 + textBlockHeight + (itemsLayout.length > 0 ? 8 + iconBlockHeight : 0);
+
+          const discX = 15;
+          const discY = height - discHeight - 15;
+
+          // 3. Отрисовка белого фона
+          ctx.globalAlpha = discOpacity;
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 4;
+
+          ctx.beginPath();
+          if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(discX, discY, discWidth, discHeight, 10);
+          } else {
+            ctx.rect(discX, discY, discWidth, discHeight);
+          }
+          ctx.fill();
+
+          ctx.shadowColor = 'transparent';
+          ctx.globalAlpha = 1.0;
+
+          // 4. Текст дисклеймера
+          ctx.fillStyle = '#1a1a1a';
+          ctx.font = '700 11.5px "Plus Jakarta Sans", sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+
+          lines.forEach((line, index) => {
+            ctx.fillText(line, discX + padding, discY + padding + index * lineHeight);
+          });
+
+          // 5. Отрисовка иконок с переносом на новые строки
+          if (itemsLayout.length > 0) {
+            let startY = discY + padding + textBlockHeight + 8;
+
+            for (let r = 0; r < itemsLayout.length; r++) {
+              let drawX = discX + padding;
+              const rowY = startY + r * rowHeight;
+
+              for (const item of itemsLayout[r]) {
+                const img = await loadCanvasImage(`icons/${item.fileName}`);
+                if (img) {
+                  ctx.drawImage(img, drawX, rowY + 2, 18, 18);
+                }
+                
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.typeName, drawX + 22, rowY + 11);
+
+                drawX += item.width + gapBetweenItems;
+              }
+            }
+          }
+
+          ctx.restore();
         }
-        ctx.drawImage(bgPattern, legendX, legendY, legendWidth, legendHeight);
-        try { ctx.filter = 'none'; } catch (e) {}
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-        ctx.fill();
-
-        const glossGrad = ctx.createLinearGradient(0, legendY, 0, legendY + legendHeight * 0.5);
-        glossGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
-        glossGrad.addColorStop(0.7, 'rgba(255, 255, 255, 0.05)');
-        glossGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-        ctx.fillStyle = glossGrad;
-        ctx.beginPath();
-        if (typeof ctx.roundRect === 'function') {
-          ctx.roundRect(legendX + 1, legendY + 1, legendWidth - 2, legendHeight * 0.48, [radius, radius, 12, 12]);
-        } else {
-          ctx.rect(legendX + 1, legendY + 1, legendWidth - 2, legendHeight * 0.48);
-        }
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-        ctx.lineWidth = 1.2;
-        createGlassPath(ctx);
-        ctx.stroke();
-
-        ctx.restore();
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '600 10.5px "Plus Jakarta Sans", sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetY = 1;
-        ctx.fillText('Дані беруться з відкритих джерел', legendX + 14, legendY + 12);
-        ctx.fillText('та наносяться вручну', legendX + 14, legendY + 26);
-
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(legendX + 14, legendY + 44);
-        ctx.lineTo(legendX + legendWidth - 14, legendY + 44);
-        ctx.stroke();
-
-        if (imgNew1) {
-          ctx.shadowColor = 'rgba(0,0,0,0.6)';
-          ctx.shadowBlur = 4;
-          ctx.drawImage(imgNew1, legendX + 14, legendY + 50, 18, 18);
-        }
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('Шахед', legendX + 40, legendY + 59);
-
-        if (imgNew2) {
-          ctx.shadowColor = 'rgba(0,0,0,0.6)';
-          ctx.shadowBlur = 4;
-          ctx.drawImage(imgNew2, legendX + 14, legendY + 70, 18, 18);
-        }
-        ctx.fillText('Реактивний', legendX + 40, legendY + 79);
-
-        ctx.restore();
         ctx.restore();
 
         const blob = await new Promise(resolve => out.toBlob(resolve, 'image/png'));
