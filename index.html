@@ -231,7 +231,6 @@
       padding: 8px 0;
     }
 
-    /* Стиль белой карточки-дисклеймера под пример на фото */
     .legend-panel {
       position: absolute;
       bottom: 20px;
@@ -614,7 +613,7 @@
 <button class="settings-btn" id="settings-btn" title="Настройки">
   <svg viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
   </svg>
 </button>
 
@@ -635,10 +634,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Прозрачность
-        <small>Насколько прозрачна белая плашка</small>
-      </div>
+      <div class="settings-label">Прозрачность</div>
       <div class="range-control">
         <input type="range" id="disclaimer-opacity-slider" class="range-slider" min="10" max="100" value="95">
         <span class="range-value" id="disclaimer-opacity-value">95%</span>
@@ -647,12 +643,60 @@
   </div>
 
   <div class="settings-group">
-    <div class="settings-group-title">Карта</div>
+    <div class="settings-group-title">Траектория БПЛА</div>
+    <div class="settings-row">
+      <div class="settings-label">Показывать траекторию</div>
+      <label class="toggle">
+        <input type="checkbox" id="trajectory-enabled" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
     <div class="settings-row">
       <div class="settings-label">
-        Названия Н.П. с карты
-        <small>Убрать кастомные, показать стандартные</small>
+        Авто-цвет линии
+        <small>Цвет подстраивается под иконку</small>
       </div>
+      <label class="toggle">
+        <input type="checkbox" id="trajectory-autocolor" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="settings-row" id="trajectory-color-row">
+      <div class="settings-label">Свой цвет линии</div>
+      <input type="color" id="trajectory-color" class="color-input" value="#38bdf8">
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">Длина траектории</div>
+      <div class="range-control">
+        <input type="range" id="trajectory-length-slider" class="range-slider" min="1" max="50" value="10">
+        <span class="range-value" id="trajectory-length-value">10 км</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">Толщина линии</div>
+      <div class="range-control">
+        <input type="range" id="trajectory-width-slider" class="range-slider" min="1" max="8" value="3">
+        <span class="range-value" id="trajectory-width-value">3px</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">Прозрачность линии</div>
+      <div class="range-control">
+        <input type="range" id="trajectory-opacity-slider" class="range-slider" min="10" max="100" value="85">
+        <span class="range-value" id="trajectory-opacity-value">85%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Карта</div>
+    <div class="settings-row">
+      <div class="settings-label">Названия Н.П. с карты</div>
       <label class="toggle">
         <input type="checkbox" id="toggle-map-labels">
         <span class="slider"></span>
@@ -660,10 +704,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Насыщенность карты
-        <small>Регулировка цвета подложки спутника</small>
-      </div>
+      <div class="settings-label">Насыщенность карты</div>
       <div class="range-control">
         <input type="range" id="saturation-slider" class="range-slider" min="-100" max="100" value="-100">
         <span class="range-value" id="saturation-value">-100%</span>
@@ -671,10 +712,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Яркость городов
-        <small>Яркость/прозрачность слоя towns.geojson</small>
-      </div>
+      <div class="settings-label">Яркость городов</div>
       <div class="range-control">
         <input type="range" id="towns-brightness-slider" class="range-slider" min="0" max="100" value="95">
         <span class="range-value" id="towns-brightness-value">95%</span>
@@ -703,10 +741,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Прозрачность
-        <small>Насколько бледным будет текст</small>
-      </div>
+      <div class="settings-label">Прозрачность</div>
       <div class="range-control">
         <input type="range" id="watermark-opacity-slider" class="range-slider" min="1" max="100" value="12">
         <span class="range-value" id="watermark-opacity-value">12%</span>
@@ -714,10 +749,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Размер
-        <small>Размер шрифта водяного знака</small>
-      </div>
+      <div class="settings-label">Размер</div>
       <div class="range-control">
         <input type="range" id="watermark-size-slider" class="range-slider" min="10" max="80" value="28">
         <span class="range-value" id="watermark-size-value">28px</span>
@@ -725,10 +757,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Плотность (количество)
-        <small>Сколько знаков на экране</small>
-      </div>
+      <div class="settings-label">Плотность (количество)</div>
       <div class="range-control">
         <input type="range" id="watermark-density-slider" class="range-slider" min="1" max="30" value="8">
         <span class="range-value" id="watermark-density-value">8</span>
@@ -736,10 +765,7 @@
     </div>
 
     <div class="settings-row-vertical">
-      <div class="settings-label">
-        Угол поворота
-        <small>Наклон текста в градусах</small>
-      </div>
+      <div class="settings-label">Угол поворота</div>
       <div class="range-control">
         <input type="range" id="watermark-angle-slider" class="range-slider" min="-90" max="90" value="-30">
         <span class="range-value" id="watermark-angle-value">-30°</span>
@@ -766,6 +792,9 @@
       </button>
       <button class="icon-btn" onclick="addIconMarker('orlan.png', 'Разведчик')">
         <img src="icons/orlan.png" alt="Разведчик"> Разведчик
+      </button>
+      <button class="icon-btn" onclick="addIconMarker('avia.png', 'Т/А')">
+        <img src="icons/avia.png" alt="Т/А"> Т/А
       </button>
     </div>
   </div>
@@ -836,9 +865,10 @@
   const SHOSTKA_CENTER = [33.4729, 51.8638];
   const TARGET_ZOOM = 9.3;
 
-  const STORAGE_KEY = 'shostka_map_settings_v2';
+  const STORAGE_KEY = 'shostka_map_settings_v5';
 
   let activeFeatures = [];
+  let activeTrajectories = [];
   let markerCounters = {};
   let loadedImages = new Set();
   let draggedFeatureId = null;
@@ -849,7 +879,45 @@
   let initialTouchAngle = 0;
   let initialDroneRotation = 0;
 
-  // Дисклеймер UI
+  // Поскольку все иконки смотрят влево (<), нос находится в направлении 0 градусов (влево)
+  const ICON_OFFSET_ANGLES = {
+    'new1.png': 0,
+    'new2.png': 0,
+    'banderola.png': 0,
+    'kab.png': 0,
+    'orlan.png': 0,
+    'avia.png': 0,
+    'шахед.png': 0,
+    'зала.png': 0,
+    'італмас.png': 0,
+    'ланцет.png': 0,
+    'молнія.png': 0,
+    'невідомий.png': 0,
+    'реактивний.png': 0,
+    'розвіддрон.png': 0,
+    'скам.png': 0,
+    'фпв.png': 0
+  };
+
+  const ICON_AUTO_COLORS = {
+    'new1.png': '#ec4899',
+    'new2.png': '#38bdf8',
+    'banderola.png': '#f97316',
+    'kab.png': '#eab308',
+    'orlan.png': '#38bdf8',
+    'avia.png': '#a855f7',
+    'шахед.png': '#ec4899',
+    'зала.png': '#38bdf8',
+    'італмас.png': '#f97316',
+    'ланцет.png': '#ef4444',
+    'молнія.png': '#eab308',
+    'невідомий.png': '#94a3b8',
+    'реактивний.png': '#38bdf8',
+    'розвіддрон.png': '#38bdf8',
+    'скам.png': '#22c55e',
+    'фпв.png': '#ef4444'
+  };
+
   const disclaimerEnabled = document.getElementById('disclaimer-enabled');
   const disclaimerTextInput = document.getElementById('disclaimer-text-input');
   const disclaimerOpacitySlider = document.getElementById('disclaimer-opacity-slider');
@@ -858,7 +926,17 @@
   const disclaimerTextView = document.getElementById('disclaimer-text-view');
   const legendItemsView = document.getElementById('legend-items-view');
 
-  // Глобальные ссылки на элементы настроек водяного знака и карты
+  const trajectoryEnabled = document.getElementById('trajectory-enabled');
+  const trajectoryAutocolor = document.getElementById('trajectory-autocolor');
+  const trajectoryColorRow = document.getElementById('trajectory-color-row');
+  const trajectoryColor = document.getElementById('trajectory-color');
+  const trajectoryLengthSlider = document.getElementById('trajectory-length-slider');
+  const trajectoryLengthValue = document.getElementById('trajectory-length-value');
+  const trajectoryWidthSlider = document.getElementById('trajectory-width-slider');
+  const trajectoryWidthValue = document.getElementById('trajectory-width-value');
+  const trajectoryOpacitySlider = document.getElementById('trajectory-opacity-slider');
+  const trajectoryOpacityValue = document.getElementById('trajectory-opacity-value');
+
   const toggleMapLabels = document.getElementById('toggle-map-labels');
   const saturationSlider = document.getElementById('saturation-slider');
   const saturationValue = document.getElementById('saturation-value');
@@ -881,6 +959,14 @@
       enabled: true,
       text: 'Мапа не є військовою. Усі дані взяті з відкритих телеграм-каналів і можуть бути неточними.',
       opacity: 95
+    },
+    trajectory: {
+      enabled: true,
+      autocolor: true,
+      color: '#38bdf8',
+      length: 10,
+      width: 3,
+      opacity: 85
     },
     mapLabels: false,
     saturation: -100,
@@ -905,10 +991,10 @@
         ...defaultSettings,
         ...parsed,
         disclaimer: { ...defaultSettings.disclaimer, ...(parsed.disclaimer || {}) },
+        trajectory: { ...defaultSettings.trajectory, ...(parsed.trajectory || {}) },
         watermark: { ...defaultSettings.watermark, ...(parsed.watermark || {}) }
       };
     } catch (e) {
-      console.warn('Ошибка загрузки настроек:', e);
       return JSON.parse(JSON.stringify(defaultSettings));
     }
   }
@@ -920,6 +1006,14 @@
           enabled: disclaimerEnabled.checked,
           text: disclaimerTextInput.value,
           opacity: parseInt(disclaimerOpacitySlider.value, 10)
+        },
+        trajectory: {
+          enabled: trajectoryEnabled.checked,
+          autocolor: trajectoryAutocolor.checked,
+          color: trajectoryColor.value,
+          length: parseInt(trajectoryLengthSlider.value, 10),
+          width: parseInt(trajectoryWidthSlider.value, 10),
+          opacity: parseInt(trajectoryOpacitySlider.value, 10)
         },
         mapLabels: toggleMapLabels.checked,
         saturation: parseInt(saturationSlider.value, 10),
@@ -935,9 +1029,7 @@
         }
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch (e) {
-      console.warn('Ошибка сохранения настроек:', e);
-    }
+    } catch (e) {}
   }
 
   const savedSettings = loadSettings();
@@ -1188,10 +1280,8 @@
     legendPanel.style.opacity = (parseInt(disclaimerOpacitySlider.value, 10) / 100).toString();
     disclaimerTextView.textContent = disclaimerTextInput.value;
 
-    // Определяем, какие объекты отрисовывать
     const sourceList = featuresInBox !== null ? featuresInBox : activeFeatures;
 
-    // Группируем по уникальным типам/иконкам
     const uniqueTypes = new Map();
     sourceList.forEach(f => {
       const typeName = f.properties.typeName || f.properties.title.replace(/\s+\d+$/, '');
@@ -1240,6 +1330,38 @@
     if (map.getLayer('towns-outline')) {
       map.setPaintProperty('towns-outline', 'line-opacity', Math.min(1, opacity + 0.05));
     }
+  }
+
+  function updateTrajectoryStyle() {
+    if (!map.getLayer('trajectories-layer')) return;
+    const enabled = trajectoryEnabled.checked;
+    const isAutocolor = trajectoryAutocolor.checked;
+    const fallbackColor = trajectoryColor.value;
+    const width = parseInt(trajectoryWidthSlider.value, 10);
+    const opacity = parseInt(trajectoryOpacitySlider.value, 10) / 100;
+
+    trajectoryColorRow.style.display = isAutocolor ? 'none' : 'flex';
+
+    map.setLayoutProperty('trajectories-layer', 'visibility', enabled ? 'visible' : 'none');
+    map.setPaintProperty('trajectories-layer', 'line-width', width);
+
+    // Динамический градиент на основе свойства цвета линии и общей прозрачности
+    const activeColorExpr = isAutocolor ? ['get', 'color'] : fallbackColor;
+
+    map.setPaintProperty('trajectories-layer', 'line-gradient', [
+      'interpolate',
+      ['linear'],
+      ['line-progress'],
+      0, ['to-rgba', activeColorExpr, opacity],
+      0.3, ['to-rgba', activeColorExpr, opacity * 0.7],
+      1, ['to-rgba', activeColorExpr, 0]
+    ]);
+  }
+
+  function syncTrajectoryUI() {
+    trajectoryLengthValue.textContent = trajectoryLengthSlider.value + ' км';
+    trajectoryWidthValue.textContent = trajectoryWidthSlider.value + 'px';
+    trajectoryOpacityValue.textContent = trajectoryOpacitySlider.value + '%';
   }
 
   function renderWatermark() {
@@ -1298,6 +1420,14 @@
     disclaimerOpacityValue.textContent = s.disclaimer.opacity + '%';
     renderDisclaimerPanel();
 
+    trajectoryEnabled.checked = s.trajectory.enabled;
+    trajectoryAutocolor.checked = s.trajectory.autocolor !== false;
+    trajectoryColor.value = s.trajectory.color;
+    trajectoryLengthSlider.value = s.trajectory.length;
+    trajectoryWidthSlider.value = s.trajectory.width;
+    trajectoryOpacitySlider.value = s.trajectory.opacity;
+    syncTrajectoryUI();
+
     toggleMapLabels.checked = s.mapLabels;
     
     saturationSlider.value = s.saturation;
@@ -1349,9 +1479,7 @@
           ukraineRings.push(poly[0]);
         });
       }
-    } catch(e) {
-      console.error("Ошибка загрузки ukraine.geojson", e);
-    }
+    } catch(e) {}
 
     if (ukraineRings.length > 0) {
       const worldBox = [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]];
@@ -1511,6 +1639,32 @@
       data: {
         type: 'FeatureCollection',
         features: []
+      }
+    });
+
+    map.addSource('trajectories-src', {
+      type: 'geojson',
+      lineMetrics: true,
+      data: {
+        type: 'FeatureCollection',
+        features: []
+      }
+    });
+
+    map.addLayer({
+      id: 'trajectories-layer',
+      type: 'line',
+      source: 'trajectories-src',
+      paint: {
+        'line-width': 3,
+        'line-gradient': [
+          'interpolate',
+          ['linear'],
+          ['line-progress'],
+          0, ['to-rgba', ['get', 'color'], 0.85],
+          0.3, ['to-rgba', ['get', 'color'], 0.6],
+          1, ['to-rgba', ['get', 'color'], 0]
+        ]
       }
     });
 
@@ -1679,8 +1833,8 @@
     }, { passive: false, capture: true });
 
     applySettings(savedSettings);
+    updateTrajectoryStyle();
 
-    // События настроек дисклеймера
     disclaimerEnabled.addEventListener('change', () => {
       renderDisclaimerPanel();
       saveSettings();
@@ -1694,6 +1848,39 @@
     disclaimerOpacitySlider.addEventListener('input', (e) => {
       disclaimerOpacityValue.textContent = e.target.value + '%';
       renderDisclaimerPanel();
+      saveSettings();
+    });
+
+    trajectoryEnabled.addEventListener('change', () => {
+      updateTrajectoryStyle();
+      saveSettings();
+    });
+
+    trajectoryAutocolor.addEventListener('change', () => {
+      updateTrajectoryStyle();
+      saveSettings();
+    });
+
+    trajectoryColor.addEventListener('input', () => {
+      updateTrajectoryStyle();
+      saveSettings();
+    });
+
+    trajectoryLengthSlider.addEventListener('input', (e) => {
+      trajectoryLengthValue.textContent = e.target.value + ' км';
+      updateGeoJSON();
+      saveSettings();
+    });
+
+    trajectoryWidthSlider.addEventListener('input', (e) => {
+      trajectoryWidthValue.textContent = e.target.value + 'px';
+      updateTrajectoryStyle();
+      saveSettings();
+    });
+
+    trajectoryOpacitySlider.addEventListener('input', (e) => {
+      trajectoryOpacityValue.textContent = e.target.value + '%';
+      updateTrajectoryStyle();
       saveSettings();
     });
 
@@ -1780,22 +1967,60 @@
     });
   }
 
+  // Поскольку все иконки смотрят влево (<), нос направлен по базовому углу 0° (вдоль оси Х влево)
+  function getActualHeading(fileName, userRotation) {
+    return (userRotation + 0) % 360;
+  }
+
+  function getTrajectoryCoords(lng, lat, heading) {
+    const rad = (heading - 90) * (Math.PI / 180);
+    const earthRadius = 6378137;
+    const distanceKm = parseInt(trajectoryLengthSlider ? trajectoryLengthSlider.value : 10, 10);
+    const distance = distanceKm * 1000;
+
+    const latRad = lat * (Math.PI / 180);
+    const lngRad = lng * (Math.PI / 180);
+
+    const targetLatRad = Math.asin(
+      Math.sin(latRad) * Math.cos(distance / earthRadius) +
+      Math.cos(latRad) * Math.sin(distance / earthRadius) * Math.cos(rad)
+    );
+    
+    const targetLngRad = lngRad + Math.atan2(
+      Math.sin(rad) * Math.sin(distance / earthRadius) * Math.cos(latRad),
+      Math.cos(distance / earthRadius) - Math.sin(latRad) * Math.sin(targetLatRad)
+    );
+
+    return [
+      targetLngRad * (180 / Math.PI),
+      targetLatRad * (180 / Math.PI)
+    ];
+  }
+
   async function addIconMarker(fileName, typeName) {
     await ensureImageLoaded(fileName);
 
     const center = map.getCenter();
     const randomOffsetLng = (Math.random() - 0.5) * 0.01;
     const randomOffsetLat = (Math.random() - 0.5) * 0.01;
+    const startCoords = [center.lng + randomOffsetLng, center.lat + randomOffsetLat];
 
     markerCounters[typeName] = (markerCounters[typeName] || 0) + 1;
     const title = `${typeName} ${markerCounters[typeName]}`;
     const id = 'marker_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
 
+    const initialRotation = 0;
+    const heading = getActualHeading(fileName, initialRotation);
+    const endCoords = getTrajectoryCoords(startCoords[0], startCoords[1], heading);
+
+    const isAutocolor = trajectoryAutocolor ? trajectoryAutocolor.checked : true;
+    const color = isAutocolor ? (ICON_AUTO_COLORS[fileName] || '#38bdf8') : trajectoryColor.value;
+
     const newFeature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [center.lng + randomOffsetLng, center.lat + randomOffsetLat]
+        coordinates: startCoords
       },
       properties: {
         id: id,
@@ -1803,12 +2028,26 @@
         typeName: typeName,
         fileName: fileName,
         iconImage: fileName,
-        rotation: 0,
+        rotation: initialRotation,
         checked: false
       }
     };
 
+    const trajFeature = {
+      type: 'Feature',
+      id: id + '_line',
+      geometry: {
+        type: 'LineString',
+        coordinates: [startCoords, endCoords]
+      },
+      properties: {
+        parentId: id,
+        color: color
+      }
+    };
+
     activeFeatures.push(newFeature);
+    activeTrajectories.push(trajFeature);
     updateGeoJSON();
     updateUIList();
     renderDisclaimerPanel();
@@ -1822,10 +2061,34 @@
         features: activeFeatures
       });
     }
+
+    const isAutocolor = trajectoryAutocolor.checked;
+    const fallbackColor = trajectoryColor.value;
+
+    activeFeatures.forEach(feat => {
+      const line = activeTrajectories.find(t => t.properties.parentId === feat.properties.id);
+      if (line) {
+        const heading = getActualHeading(feat.properties.fileName, feat.properties.rotation || 0);
+        line.geometry.coordinates = [
+          feat.geometry.coordinates,
+          getTrajectoryCoords(feat.geometry.coordinates[0], feat.geometry.coordinates[1], heading)
+        ];
+        line.properties.color = isAutocolor ? (ICON_AUTO_COLORS[feat.properties.fileName] || '#38bdf8') : fallbackColor;
+      }
+    });
+
+    const trajSource = map.getSource('trajectories-src');
+    if (trajSource) {
+      trajSource.setData({
+        type: 'FeatureCollection',
+        features: activeTrajectories
+      });
+    }
   }
 
   function removeSingleMarker(id) {
     activeFeatures = activeFeatures.filter(f => f.properties.id !== id);
+    activeTrajectories = activeTrajectories.filter(t => t.properties.parentId !== id);
     updateGeoJSON();
     updateUIList();
     renderDisclaimerPanel();
@@ -1878,7 +2141,9 @@
   }
 
   function deleteSelectedObjects() {
-    activeFeatures = activeFeatures.filter(f => !f.properties.checked);
+    const idsToRemove = new Set(activeFeatures.filter(f => f.properties.checked).map(f => f.properties.id));
+    activeFeatures = activeFeatures.filter(f => !idsToRemove.has(f.properties.id));
+    activeTrajectories = activeTrajectories.filter(t => !idsToRemove.has(t.properties.parentId));
     updateGeoJSON();
     updateUIList();
     renderDisclaimerPanel();
@@ -1981,7 +2246,6 @@
         return;
       }
 
-      // Находим, какие БПЛА попали в рамку кадра
       const canvasRect = map.getCanvas().getBoundingClientRect();
       const featuresInBox = activeFeatures.filter(f => {
         const pt = map.project(f.geometry.coordinates);
@@ -2042,7 +2306,6 @@
         ctx.save();
         ctx.scale(scale, scale);
 
-        // Отрисовка водяных знаков
         if (watermarkEnabled.checked) {
           try {
             const wmText = (watermarkText.value.trim() || 'ШОСТКА • ОГЛЯД');
@@ -2087,12 +2350,9 @@
               }
             }
             ctx.restore();
-          } catch (wmErr) {
-            console.warn('Ошибка отрисовки водяного знака:', wmErr);
-          }
+          } catch (wmErr) {}
         }
 
-        // Отрисовка названий городов
         places.forEach(place => {
           const point = map.project(place.coords);
           const x = point.x + mapCanvasRect.left - left;
@@ -2113,7 +2373,6 @@
           ctx.fillText(place.name, x, y);
         });
 
-        // Отрисовка белой карточки дисклеймера (в стиле фото)
         if (disclaimerEnabled.checked) {
           const loadCanvasImage = (src) => {
             return new Promise((res) => {
@@ -2125,7 +2384,6 @@
             });
           };
 
-          // Формируем список уникальных типов БПЛА из попавших в рамку
           const uniqueTypesMap = new Map();
           featuresInBox.forEach(f => {
             const typeName = f.properties.typeName || f.properties.title.replace(/\s+\d+$/, '');
@@ -2144,7 +2402,6 @@
           ctx.save();
           ctx.font = '700 11.5px "Plus Jakarta Sans", sans-serif';
           
-          // 1. Разбивка текста дисклеймера на строки
           const words = discText.split(' ');
           let lines = [];
           let currentLine = words[0] || '';
@@ -2162,7 +2419,6 @@
           const lineHeight = 16;
           const textBlockHeight = lines.length * lineHeight;
 
-          // 2. Предварительный расчёт строк для иконок (чтобы узнать точную высоту плашки)
           ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
           const itemsLayout = [];
           let currentRow = [];
@@ -2171,7 +2427,7 @@
           const gapBetweenItems = 12;
 
           for (const [typeName, fileName] of uniqueTypesMap.entries()) {
-            const itemWidth = 20 + 4 + ctx.measureText(typeName).width; // иконка + отступ + текст
+            const itemWidth = 20 + 4 + ctx.measureText(typeName).width;
             if (currentRow.length > 0 && currentX + itemWidth > maxX) {
               itemsLayout.push(currentRow);
               currentRow = [];
@@ -2191,7 +2447,6 @@
           const discX = 15;
           const discY = height - discHeight - 15;
 
-          // 3. Отрисовка белого фона
           ctx.globalAlpha = discOpacity;
           ctx.fillStyle = '#ffffff';
           ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
@@ -2210,7 +2465,6 @@
           ctx.shadowColor = 'transparent';
           ctx.globalAlpha = 1.0;
 
-          // 4. Текст дисклеймера
           ctx.fillStyle = '#1a1a1a';
           ctx.font = '700 11.5px "Plus Jakarta Sans", sans-serif';
           ctx.textAlign = 'left';
@@ -2220,7 +2474,6 @@
             ctx.fillText(line, discX + padding, discY + padding + index * lineHeight);
           });
 
-          // 5. Отрисовка иконок с переносом на новые строки
           if (itemsLayout.length > 0) {
             let startY = discY + padding + textBlockHeight + 8;
 
@@ -2256,9 +2509,7 @@
           try {
             await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
             copied = true;
-          } catch (err) {
-            console.warn('Не удалось скопировать изображение, будет скачивание:', err);
-          }
+          } catch (err) {}
         }
         if (!copied) {
           const url = URL.createObjectURL(blob);
@@ -2274,8 +2525,7 @@
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       } catch (err) {
-        console.error('Ошибка скриншота:', err);
-        toast.textContent = 'Ошибка: ' + (err && err.message ? err.message : 'неизвестная');
+        toast.textContent = 'Ошибка скриншота';
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       } finally {
@@ -2284,9 +2534,7 @@
             map.setPixelRatio(originalPixelRatio);
             map.resize();
             map.triggerRepaint();
-          } catch (restoreError) {
-            console.warn('Не удалось вернуть исходное разрешение карты:', restoreError);
-          }
+          } catch (restoreError) {}
         }
         restoreUi();
       }
