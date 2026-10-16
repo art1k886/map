@@ -231,7 +231,6 @@
       padding: 8px 0;
     }
 
-    /* ===== Настоящий Liquid Glass Блок Легенды и Дисклеймера ===== */
     .legend-panel {
       position: absolute;
       bottom: 20px;
@@ -393,7 +392,6 @@
     }
     .toast.show { opacity: 1; }
 
-    /* ===== Настройки ===== */
     .settings-btn {
       position: absolute;
       top: 10px;
@@ -441,14 +439,40 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 10px;
       padding: 10px 12px;
-      min-width: 250px;
+      min-width: 270px;
+      max-height: calc(100vh - 70px);
+      overflow-y: auto;
       box-shadow: 0 8px 32px rgba(0,0,0,0.7);
       display: none;
       flex-direction: column;
       gap: 12px;
     }
+    .settings-menu::-webkit-scrollbar { width: 4px; }
+    .settings-menu::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
     .settings-menu.open {
       display: flex;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+    }
+
+    .settings-group-title {
+      color: #38bdf8;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
     }
 
     .settings-row {
@@ -478,7 +502,6 @@
       margin-top: 1px;
     }
 
-    /* Тумблер */
     .toggle {
       position: relative;
       width: 36px;
@@ -517,7 +540,6 @@
       background: #ffffff;
     }
 
-    /* Слайдер насыщенности */
     .range-control {
       display: flex;
       align-items: center;
@@ -555,16 +577,71 @@
       color: #38bdf8;
       font-size: 10px;
       font-weight: 700;
-      min-width: 32px;
+      min-width: 36px;
       text-align: right;
+    }
+
+    .text-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 5px;
+      padding: 6px 8px;
+      color: #e2e8f0;
+      font-size: 11px;
+      font-family: inherit;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+    }
+    .text-input:focus {
+      border-color: #38bdf8;
+    }
+
+    .color-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    .color-input::-webkit-color-swatch-wrapper { padding: 2px; }
+    .color-input::-webkit-color-swatch { border: none; border-radius: 3px; }
+
+    #watermark-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 500;
+      overflow: hidden;
+    }
+
+    .watermark-tile {
+      position: absolute;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    }
+
+    .settings-hint {
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 500;
+      line-height: 1.3;
     }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
+<div id="watermark-layer"></div>
 
-<!-- Кнопка настроек -->
 <button class="settings-btn" id="settings-btn" title="Настройки">
   <svg viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="3"/>
@@ -572,27 +649,105 @@
   </svg>
 </button>
 
-<!-- Меню настроек -->
 <div class="settings-menu" id="settings-menu">
-  <div class="settings-row">
-    <div class="settings-label">
-      Названия Н.П. с карты
-      <small>Убрать кастомные, показать стандартные</small>
+  <div class="settings-group">
+    <div class="settings-group-title">Карта</div>
+    <div class="settings-row">
+      <div class="settings-label">
+        Названия Н.П. с карты
+        <small>Убрать кастомные, показать стандартные</small>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-map-labels">
+        <span class="slider"></span>
+      </label>
     </div>
-    <label class="toggle">
-      <input type="checkbox" id="toggle-map-labels">
-      <span class="slider"></span>
-    </label>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Насыщенность карты
+        <small>Регулировка цвета подложки спутника</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="saturation-slider" class="range-slider" min="-100" max="100" value="-100">
+        <span class="range-value" id="saturation-value">-100%</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Яркость городов
+        <small>Яркость/прозрачность слоя towns.geojson</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="towns-brightness-slider" class="range-slider" min="0" max="100" value="95">
+        <span class="range-value" id="towns-brightness-value">95%</span>
+      </div>
+    </div>
   </div>
 
-  <div class="settings-row-vertical">
-    <div class="settings-label">
-      Насыщенность карты
-      <small>Регулировка цвета подложки спутника</small>
+  <div class="settings-group">
+    <div class="settings-group-title">Водяной знак</div>
+    <div class="settings-row">
+      <div class="settings-label">Показать</div>
+      <label class="toggle">
+        <input type="checkbox" id="watermark-enabled">
+        <span class="slider"></span>
+      </label>
     </div>
-    <div class="range-control">
-      <input type="range" id="saturation-slider" class="range-slider" min="-100" max="100" value="-100">
-      <span class="range-value" id="saturation-value">0%</span>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">Текст</div>
+      <input type="text" id="watermark-text" class="text-input" value="ШОСТКА • ОГЛЯД" maxlength="40">
+    </div>
+
+    <div class="settings-row">
+      <div class="settings-label">Цвет</div>
+      <input type="color" id="watermark-color" class="color-input" value="#ffffff">
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Прозрачность
+        <small>Насколько бледным будет текст</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="watermark-opacity-slider" class="range-slider" min="1" max="100" value="12">
+        <span class="range-value" id="watermark-opacity-value">12%</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Размер
+        <small>Размер шрифта водяного знака</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="watermark-size-slider" class="range-slider" min="10" max="80" value="28">
+        <span class="range-value" id="watermark-size-value">28px</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Плотность (количество)
+        <small>Сколько знаков на экране</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="watermark-density-slider" class="range-slider" min="1" max="30" value="8">
+        <span class="range-value" id="watermark-density-value">8</span>
+      </div>
+    </div>
+
+    <div class="settings-row-vertical">
+      <div class="settings-label">
+        Угол поворота
+        <small>Наклон текста в градусах</small>
+      </div>
+      <div class="range-control">
+        <input type="range" id="watermark-angle-slider" class="range-slider" min="-90" max="90" value="-30">
+        <span class="range-value" id="watermark-angle-value">-30°</span>
+      </div>
     </div>
   </div>
 </div>
@@ -674,7 +829,6 @@
   </button>
 </div>
 
-<!-- Блок дисклеймера и типов БПЛА в стиле Liquid Glass -->
 <div class="legend-panel">
   <div class="disclaimer-text">Дані беруться з відкритих джерел та наносяться вручну</div>
   <div class="legend-items">
@@ -695,6 +849,8 @@
   const SHOSTKA_CENTER = [33.4729, 51.8638];
   const TARGET_ZOOM = 9.3;
 
+  const STORAGE_KEY = 'shostka_map_settings_v1';
+
   let activeFeatures = [];
   let markerCounters = {};
   let loadedImages = new Set();
@@ -702,10 +858,82 @@
   let hoveredDroneId = null;
   let customPlaceMarkers = []; 
 
-  // Сенсорное управление
   let touchActiveDroneId = null;
   let initialTouchAngle = 0;
   let initialDroneRotation = 0;
+
+  // Глобальные ссылки на элементы настроек водяного знака и карты
+  const toggleMapLabels = document.getElementById('toggle-map-labels');
+  const saturationSlider = document.getElementById('saturation-slider');
+  const saturationValue = document.getElementById('saturation-value');
+  const townsBrightnessSlider = document.getElementById('towns-brightness-slider');
+  const townsBrightnessValue = document.getElementById('towns-brightness-value');
+  const watermarkEnabled = document.getElementById('watermark-enabled');
+  const watermarkText = document.getElementById('watermark-text');
+  const watermarkColor = document.getElementById('watermark-color');
+  const watermarkOpacitySlider = document.getElementById('watermark-opacity-slider');
+  const watermarkOpacityValue = document.getElementById('watermark-opacity-value');
+  const watermarkSizeSlider = document.getElementById('watermark-size-slider');
+  const watermarkSizeValue = document.getElementById('watermark-size-value');
+  const watermarkDensitySlider = document.getElementById('watermark-density-slider');
+  const watermarkDensityValue = document.getElementById('watermark-density-value');
+  const watermarkAngleSlider = document.getElementById('watermark-angle-slider');
+  const watermarkAngleValue = document.getElementById('watermark-angle-value');
+
+  const defaultSettings = {
+    mapLabels: false,
+    saturation: -100,
+    townsBrightness: 95,
+    watermark: {
+      enabled: false,
+      text: 'ШОСТКА • ОГЛЯД',
+      color: '#ffffff',
+      opacity: 12,
+      size: 28,
+      density: 8,
+      angle: -30
+    }
+  };
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return JSON.parse(JSON.stringify(defaultSettings));
+      const parsed = JSON.parse(raw);
+      return {
+        ...defaultSettings,
+        ...parsed,
+        watermark: { ...defaultSettings.watermark, ...(parsed.watermark || {}) }
+      };
+    } catch (e) {
+      console.warn('Ошибка загрузки настроек:', e);
+      return JSON.parse(JSON.stringify(defaultSettings));
+    }
+  }
+
+  function saveSettings() {
+    try {
+      const settings = {
+        mapLabels: toggleMapLabels.checked,
+        saturation: parseInt(saturationSlider.value, 10),
+        townsBrightness: parseInt(townsBrightnessSlider.value, 10),
+        watermark: {
+          enabled: watermarkEnabled.checked,
+          text: watermarkText.value,
+          color: watermarkColor.value,
+          opacity: parseInt(watermarkOpacitySlider.value, 10),
+          size: parseInt(watermarkSizeSlider.value, 10),
+          density: parseInt(watermarkDensitySlider.value, 10),
+          angle: parseInt(watermarkAngleSlider.value, 10)
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    } catch (e) {
+      console.warn('Ошибка сохранения настроек:', e);
+    }
+  }
+
+  const savedSettings = loadSettings();
 
   const places = [
     { name: "Суми", coords: [34.79906498, 50.91740593], size: "large" },
@@ -717,7 +945,6 @@
     { name: "Ромни", coords: [33.49520264, 50.74025149], size: "large" },
     { name: "Путивль", coords: [33.86884747, 51.33529242], size: "large" },
     { name: "Тростянець", coords: [34.965668, 50.484778], size: "large" },
-    { name: "Охтирка", coords: [34.89467602, 50.30852254], size: "large" },
     { name: "Лебедин", coords: [34.48258115, 50.58227558], size: "medium" },
     { name: "Буринь", coords: [33.83337859, 51.19935882], size: "medium" },
     { name: "Білопілля", coords: [34.31078602, 51.14747465], size: "medium" },
@@ -871,7 +1098,26 @@
     { name: "Курман", coords: [34.3167, 45.4925], size: "medium" },
     { name: "Перекоп", coords: [33.6931, 45.9531], size: "medium" },
     { name: "Феодосія", coords: [35.3792, 45.0317], size: "medium" },
-    { name: "Ялта", coords: [34.1667, 44.4994], size: "medium" }
+    { name: "Ялта", coords: [34.1667, 44.4994], size: "medium" },
+    { name: "Есмань", coords: [34.0659, 51.7673], size: "medium" },
+    { name: "Шалигине", coords: [34.1002, 51.5739], size: "medium" },
+    { name: "Вороніж", coords: [33.4781, 51.7755], size: "medium" },
+
+    { name: "Уралове", coords: [33.5571, 52.1872], size: "small" },
+    { name: "Очкине", coords: [33.3713, 52.2261], size: "small" },
+    { name: "Слоут", coords: [33.7970, 51.7596], size: "small" },
+    { name: "Богданівка", coords: [33.3325, 51.8954], size: "small" },
+    { name: "Собич", coords: [33.2587, 51.8602], size: "small" },
+    { name: "Пирогівка", coords: [33.2824, 51.9148], size: "small" },
+    { name: "Тиманівка", coords: [33.1276, 51.7709], size: "small" },
+    { name: "Клишки", coords: [33.3030, 51.7641], size: "small" },
+    { name: "Степне", coords: [33.752664, 52.084731], size: "small" },
+    { name: "Хутір-Михайлівський", coords: [33.899980, 52.045093], size: "medium" },
+    { name: "Миронівка", coords: [33.555312, 51.904937], size: "small" },
+    { name: "Береза", coords: [33.859720, 51.734766], size: "small" },
+    { name: "Івот", coords: [33.486329, 51.983202], size: "small" },
+    { name: "Каліївка", coords: [33.533156, 52.059774], size: "small" },
+    { name: "Шатрище", coords: [33.684786, 52.026218], size: "small" }
   ];
 
   const map = new maplibregl.Map({
@@ -922,6 +1168,116 @@
     center: SHOSTKA_CENTER,
     zoom: TARGET_ZOOM
   });
+
+  const watermarkLayer = document.getElementById('watermark-layer');
+
+  function setMapSaturation(val) {
+    const normalizedSat = parseFloat(val) / 100;
+    saturationValue.textContent = `${val > 0 ? '+' : ''}${val}%`;
+    
+    if (map.getLayer('google-satellite-layer')) {
+      map.setPaintProperty('google-satellite-layer', 'raster-saturation', normalizedSat);
+    }
+    if (map.getLayer('esri-satellite-layer')) {
+      map.setPaintProperty('esri-satellite-layer', 'raster-saturation', normalizedSat);
+    }
+  }
+
+  function setTownsBrightness(val) {
+    const opacity = parseFloat(val) / 100;
+    townsBrightnessValue.textContent = `${val}%`;
+    
+    if (map.getLayer('towns-fill')) {
+      map.setPaintProperty('towns-fill', 'fill-opacity', opacity);
+    }
+    if (map.getLayer('towns-outline')) {
+      map.setPaintProperty('towns-outline', 'line-opacity', Math.min(1, opacity + 0.05));
+    }
+  }
+
+  function renderWatermark() {
+    watermarkLayer.innerHTML = '';
+    
+    const enabled = watermarkEnabled.checked;
+    if (!enabled) {
+      watermarkLayer.style.display = 'none';
+      return;
+    }
+    watermarkLayer.style.display = 'block';
+
+    const text = watermarkText.value.trim() || 'ШОСТКА • ОГЛЯД';
+    const color = watermarkColor.value;
+    const opacity = parseInt(watermarkOpacitySlider.value, 10) / 100;
+    const fontSize = parseInt(watermarkSizeSlider.value, 10);
+    const density = parseInt(watermarkDensitySlider.value, 10);
+    const angle = parseInt(watermarkAngleSlider.value, 10);
+
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    
+    const cols = Math.max(1, Math.round(Math.sqrt(density * screenW / screenH)));
+    const rows = Math.max(1, Math.round(density / cols));
+    
+    const cellW = screenW / cols;
+    const cellH = screenH / rows;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const tile = document.createElement('div');
+        tile.className = 'watermark-tile';
+        tile.textContent = text;
+        tile.style.color = color;
+        tile.style.opacity = opacity;
+        tile.style.fontSize = fontSize + 'px';
+        tile.style.left = (c * cellW + cellW / 2) + 'px';
+        tile.style.top = (r * cellH + cellH / 2) + 'px';
+        tile.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        watermarkLayer.appendChild(tile);
+      }
+    }
+  }
+
+  function syncWatermarkUI() {
+    watermarkOpacityValue.textContent = watermarkOpacitySlider.value + '%';
+    watermarkSizeValue.textContent = watermarkSizeSlider.value + 'px';
+    watermarkDensityValue.textContent = watermarkDensitySlider.value;
+    watermarkAngleValue.textContent = watermarkAngleSlider.value + '°';
+  }
+
+  function applySettings(s) {
+    toggleMapLabels.checked = s.mapLabels;
+    
+    saturationSlider.value = s.saturation;
+    setMapSaturation(s.saturation);
+
+    townsBrightnessSlider.value = s.townsBrightness;
+    setTownsBrightness(s.townsBrightness);
+
+    watermarkEnabled.checked = s.watermark.enabled;
+    watermarkText.value = s.watermark.text;
+    watermarkColor.value = s.watermark.color;
+    watermarkOpacitySlider.value = s.watermark.opacity;
+    watermarkSizeSlider.value = s.watermark.size;
+    watermarkDensitySlider.value = s.watermark.density;
+    watermarkAngleSlider.value = s.watermark.angle;
+    
+    syncWatermarkUI();
+    renderWatermark();
+
+    if (s.mapLabels) {
+      customPlaceMarkers.forEach(m => m.remove());
+      if (map.getLayer('place-labels')) {
+        map.setLayoutProperty('place-labels', 'visibility', 'visible');
+      }
+    } else {
+      customPlaceMarkers.forEach(m => {
+        m.addTo(map);
+      });
+      if (map.getLayer('place-labels')) {
+        map.setLayoutProperty('place-labels', 'visibility', 'none');
+      }
+    }
+  }
 
   map.on('load', async () => {
     let ukraineGeojson = null;
@@ -1165,9 +1521,6 @@
       hoveredDroneId = null;
     });
 
-    /* ========================================================
-       Управление жестами для телефонов (Touch Gestures)
-       ======================================================== */
     const canvas = map.getCanvas();
 
     function getTouchAngle(t1, t2) {
@@ -1186,7 +1539,6 @@
           map.dragPan.disable();
         }
       } else if (e.touches.length === 2 && touchActiveDroneId) {
-        // Захватываем угол при касании двумя пальцами для вращения
         e.preventDefault();
         map.dragPan.disable();
         map.touchZoomRotate.disable();
@@ -1203,7 +1555,6 @@
       if (!touchActiveDroneId) return;
 
       if (e.touches.length === 1) {
-        // Перетаскивание одним пальцем
         e.preventDefault();
         const touch = e.touches[0];
         const lngLat = map.unproject([touch.clientX, touch.clientY]);
@@ -1213,7 +1564,6 @@
           updateGeoJSON();
         }
       } else if (e.touches.length === 2) {
-        // Вращение двумя пальцами
         e.preventDefault();
         const currentAngle = getTouchAngle(e.touches[0], e.touches[1]);
         const angleDiff = currentAngle - initialTouchAngle;
@@ -1275,7 +1625,8 @@
       }
     }, { passive: false, capture: true });
 
-    const toggleMapLabels = document.getElementById('toggle-map-labels');
+    applySettings(savedSettings);
+
     toggleMapLabels.addEventListener('change', () => {
       const showMapLabels = toggleMapLabels.checked;
       if (showMapLabels) {
@@ -1287,29 +1638,61 @@
         });
         map.setLayoutProperty('place-labels', 'visibility', 'none');
       }
+      saveSettings();
     });
-
-    // Управление насыщенностью карты
-    const saturationSlider = document.getElementById('saturation-slider');
-    const saturationValue = document.getElementById('saturation-value');
-
-    function setMapSaturation(val) {
-      const normalizedSat = parseFloat(val) / 100;
-      saturationValue.textContent = `${val > 0 ? '+' : ''}${val}%`;
-      
-      if (map.getLayer('google-satellite-layer')) {
-        map.setPaintProperty('google-satellite-layer', 'raster-saturation', normalizedSat);
-      }
-      if (map.getLayer('esri-satellite-layer')) {
-        map.setPaintProperty('esri-satellite-layer', 'raster-saturation', normalizedSat);
-      }
-    }
 
     saturationSlider.addEventListener('input', (e) => {
       setMapSaturation(e.target.value);
+      saveSettings();
     });
 
-    setMapSaturation(saturationSlider.value);
+    townsBrightnessSlider.addEventListener('input', (e) => {
+      setTownsBrightness(e.target.value);
+      saveSettings();
+    });
+
+    watermarkEnabled.addEventListener('change', () => {
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkText.addEventListener('input', () => {
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkColor.addEventListener('input', () => {
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkOpacitySlider.addEventListener('input', () => {
+      syncWatermarkUI();
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkSizeSlider.addEventListener('input', () => {
+      syncWatermarkUI();
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkDensitySlider.addEventListener('input', () => {
+      syncWatermarkUI();
+      renderWatermark();
+      saveSettings();
+    });
+
+    watermarkAngleSlider.addEventListener('input', () => {
+      syncWatermarkUI();
+      renderWatermark();
+      saveSettings();
+    });
+
+    window.addEventListener('resize', () => {
+      if (watermarkEnabled.checked) renderWatermark();
+    });
   });
 
   async function ensureImageLoaded(fileName) {
@@ -1575,8 +1958,56 @@
 
         ctx.save();
         ctx.scale(scale, scale);
-        
-        // Отрисовка названий Н.П.
+
+        if (watermarkEnabled.checked) {
+          try {
+            const wmText = (watermarkText.value.trim() || 'ШОСТКА • ОГЛЯД');
+            const wmColor = watermarkColor.value;
+            const wmOpacity = parseInt(watermarkOpacitySlider.value, 10) / 100;
+            const wmSize = parseInt(watermarkSizeSlider.value, 10);
+            const wmDensity = parseInt(watermarkDensitySlider.value, 10);
+            const wmAngle = parseInt(watermarkAngleSlider.value, 10);
+
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+
+            const cols = Math.max(1, Math.round(Math.sqrt(wmDensity * screenW / Math.max(1, screenH))));
+            const rows = Math.max(1, Math.round(wmDensity / cols));
+            const cellW = screenW / cols;
+            const cellH = screenH / rows;
+
+            ctx.save();
+            ctx.font = `800 ${wmSize}px "Plus Jakarta Sans", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = wmColor;
+            ctx.globalAlpha = wmOpacity;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+            ctx.shadowBlur = 3;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 1;
+
+            for (let r = 0; r < rows; r++) {
+              for (let c = 0; c < cols; c++) {
+                const screenCx = c * cellW + cellW / 2;
+                const screenCy = r * cellH + cellH / 2;
+                const x = screenCx - left;
+                const y = screenCy - top;
+                if (x < -wmSize * 4 || y < -wmSize * 4 || x > width + wmSize * 4 || y > height + wmSize * 4) continue;
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(wmAngle * Math.PI / 180);
+                ctx.fillText(wmText, 0, 0);
+                ctx.restore();
+              }
+            }
+            ctx.restore();
+          } catch (wmErr) {
+            console.warn('Ошибка отрисовки водяного знака:', wmErr);
+          }
+        }
+
         places.forEach(place => {
           const point = map.project(place.coords);
           const x = point.x + canvasRect.left - left;
@@ -1648,9 +2079,13 @@
         const pCtx = bgPattern.getContext('2d');
         pCtx.drawImage(out, legendX * scale, legendY * scale, legendWidth * scale, legendHeight * scale, 0, 0, legendWidth, legendHeight);
 
-        ctx.filter = 'blur(10px) brightness(1.15) saturate(140%)';
+        try {
+          ctx.filter = 'blur(10px) brightness(1.15) saturate(140%)';
+        } catch (e) {
+          ctx.filter = 'none';
+        }
         ctx.drawImage(bgPattern, legendX, legendY, legendWidth, legendHeight);
-        ctx.filter = 'none';
+        try { ctx.filter = 'none'; } catch (e) {}
 
         ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.fill();
@@ -1739,7 +2174,7 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
       } catch (err) {
         console.error('Ошибка скриншота:', err);
-        toast.textContent = 'Не удалось сделать скриншот. Попробуй ещё раз.';
+        toast.textContent = 'Ошибка: ' + (err && err.message ? err.message : 'неизвестная');
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       } finally {
